@@ -5,49 +5,13 @@ import Image from "next/image"
 import home1 from "@/public/logoIE.png"
 import home2 from "@/public/hello.gif"
 import { RoomForm } from "./room-generator"
-import { useSession, signIn, signOut } from "next-auth/react"
+import Navbar from "../ui/main-nav"
 
 export default function Home() {
-  const { data: session } = useSession();
-  console.log("session ", session)
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
-      <header className="bg-gray-900 text-white px-4 lg:px-6 py-4 flex items-center justify-between">
-        <Link className="flex items-center gap-2" href="#">
-          <BoldIcon className="h-6 w-6" />
-          <span className="text-xl font-bold">Tech Battles</span>
-        </Link>
-        {/* <nav className="hidden lg:flex gap-6">
-          <Link className="hover:underline" href="#">
-            Challenges
-          </Link>
-          <Link className="hover:underline" href="#">
-            Leaderboard
-          </Link>
-          <Link className="hover:underline" href="#">
-            About
-          </Link>
-          <Link className="hover:underline" href="#">
-            Contact
-          </Link>
-        </nav> */}
-        {
-          session ? (
-            <Button className="hidden lg:inline-flex" variant="secondary"
-            onClick={() => signOut()}
-          >
-            Logout
-          </Button>
-          ) : (
-            <Button className="hidden lg:inline-flex" variant="secondary"
-              onClick={() => signIn("github", { callbackUrl: "/"})}
-            >
-              Login/Register
-            </Button>
-          )
-        }
-      </header>
+      <Navbar/>
       <main className="flex-1">
         <section className="bg-gray-900 text-white py-24 md:py-32 lg:py-40">
           <div className="container px-4 md:px-6 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
