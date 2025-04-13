@@ -19,6 +19,10 @@ model User {
   name String
   publicKey  String? @unique
   email   String  @unique
+  isOnboarded  Boolean   @default(false)
+  type         CreatorType?  @default(Youtuber)
+  socialHandle  String?   @unique
+  experience  ExperienceWithDigitalAssets? @default(Beginner)
   asset  Assets[]
 }
 
@@ -26,4 +30,16 @@ model Assets {
   id String @id @default(uuid())
   userId  String
   user User  @relation(fields: [userId], references: [id])
+}
+
+enum CreatorType{
+  Youtuber
+  Musician
+  other
+}
+
+enum ExperienceWithDigitalAssets{
+  Beginner
+  Intermediate
+  Advance
 }

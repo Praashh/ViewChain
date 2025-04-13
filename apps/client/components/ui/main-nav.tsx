@@ -37,7 +37,7 @@ const Navbar = () => {
           </Button>
           ) : (
             <Button className="hidden lg:inline-flex" variant="secondary"
-              onClick={() => signIn("google", { callbackUrl: "/"})}
+              onClick={() => signIn("google", { callbackUrl: "/onboarding"})}
             >
               Signin
             </Button>
