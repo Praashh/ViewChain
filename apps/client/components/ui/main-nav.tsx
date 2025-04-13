@@ -1,4 +1,4 @@
-import { BoldIcon } from 'lucide-react';
+import { View } from 'lucide-react';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import React from 'react'
@@ -9,10 +9,10 @@ const Navbar = () => {
   console.log("session ", session)
   return (
     <div>
-         <header className="bg-gray-900 text-white px-4 lg:px-6 py-4 flex items-center justify-between">
+         <header className=" text-white px-4 lg:px-6 py-4 flex items-center justify-between">
         <Link className="flex items-center gap-2" href="#">
-          <BoldIcon className="h-6 w-6" />
-          <span className="text-xl font-bold">Tech Battles</span>
+          <View className="h-6 w-6" />
+          <span className="text-xl font-bold">ViewChain</span>
         </Link>
         {/* <nav className="hidden lg:flex gap-6">
           <Link className="hover:underline" href="#">
@@ -37,9 +37,9 @@ const Navbar = () => {
           </Button>
           ) : (
             <Button className="hidden lg:inline-flex" variant="secondary"
-              onClick={() => signIn("github", { callbackUrl: "/"})}
+              onClick={() => signIn("google", { callbackUrl: "/"})}
             >
-              Login/Register
+              Signin
             </Button>
           )
         }
