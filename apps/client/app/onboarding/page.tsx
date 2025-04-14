@@ -11,16 +11,20 @@ import {
 } from '@solana/wallet-adapter-react-ui';
 import { toast } from "sonner";
 import { ArrowRight, Upload,  Wallet, WalletIcon } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { onboardUser } from "@/actions/onboardUser";
 
-interface FormData {
+export interface FormData {
   creatorType: "Youtuber" | "Musician" | "other";
   socialMedia: string;
   experience: "Beginner" | "Intermediate" | "Advance";
   walletConnected: boolean;
+  userid?: string
 }
 
 export default function OnboardingPage() {
   const [step, setStep] = useState<number>(1);
+  const {data} = useSession();
   const [formData, setFormData] = useState<FormData>({
     creatorType: "Youtuber",
     socialMedia: "",
@@ -36,6 +40,7 @@ export default function OnboardingPage() {
   const connectWallet = async () => {
     try {
       console.log("Connecting to Solana wallet...");
+      formData.userid = data?.user.id
       
       await new Promise(resolve => setTimeout(resolve, 1000));
       
@@ -46,8 +51,14 @@ export default function OnboardingPage() {
         walletConnected: true
       });
       
+      const response = await onboardUser(formData);
+
+      if(response.success){
+        toast.success("Wallet connected successfully!");
+      }else{
+        toast.error(`Connection Failed ${err}`);
+      }
       
-      toast.success("Wallet connected successfully!");
     } catch (err) {
       toast.error(`Connection Failed ${err}`);
     }

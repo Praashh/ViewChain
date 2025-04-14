@@ -20,7 +20,7 @@ model User {
   publicKey  String? @unique
   email   String  @unique
   isOnboarded  Boolean   @default(false)
-  type         CreatorType?  @default(Youtuber)
+  creatorType         CreatorType?  @default(Youtuber)
   socialHandle  String?   @unique
   experience  ExperienceWithDigitalAssets? @default(Beginner)
   asset  Assets[]
