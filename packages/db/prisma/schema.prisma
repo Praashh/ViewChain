@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output = "./generated/client"
+  // output = "../generated/client"
 }
 
 datasource db {
@@ -32,13 +32,13 @@ model Assets {
   user User  @relation(fields: [userId], references: [id])
 }
 
-enum CreatorType{
+enum CreatorType {
   Youtuber
   Musician
   other
 }
 
-enum ExperienceWithDigitalAssets{
+enum ExperienceWithDigitalAssets {
   Beginner
   Intermediate
   Advance

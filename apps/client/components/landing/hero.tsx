@@ -92,8 +92,7 @@ export default function Hero() {
             variants={itemVariants}
             className="text-center font-paragraph text-xs md:w-[40%] md:text-base"
           >
-            Highlight your merged pull requests and share your impact on the
-            open source community with the world.
+           A decentralized platform that mints NFTs for every view or listen, turning audience engagement into verifiable, on-chain provenance
           </motion.div>
 
           <motion.div variants={itemVariants} className="mb-6">

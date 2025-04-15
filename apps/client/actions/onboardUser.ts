@@ -3,6 +3,7 @@ import { FormData as onboardUserType } from "@/app/onboarding/page"
 import { prisma } from "@repo/db/client"
 
 export async function onboardUser(onboardUser:onboardUserType) {
+    console.log("onBoardUser---", onboardUser);
     if(onboardUser.walletConnected){
         try {
             const onboardedUser = await prisma.user.update({
@@ -12,6 +13,7 @@ export async function onboardUser(onboardUser:onboardUserType) {
                 data:{
                     creatorType: onboardUser.creatorType,
                     socialHandle: onboardUser.socialMedia,
+                    publicKey: onboardUser.walletAddress,
                     experience: onboardUser.experience,
                     isOnboarded: onboardUser.walletConnected,
                 }
@@ -22,9 +24,11 @@ export async function onboardUser(onboardUser:onboardUserType) {
                 onboardedUser
             }
         } catch (error) {
+            console.log("Errorrrrr", error)
             return {
                 success: false,
-                message: "Failed to onboard user"
+                message: "Failed to onboard user",
+                error
             }
         }
     }else{

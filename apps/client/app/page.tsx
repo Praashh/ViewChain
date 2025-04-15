@@ -1,5 +1,7 @@
 "use client"
 import Hero from '@/components/landing/hero';
+import HowItWorks from '@/components/landing/HowItWorks';
+import Footer from '@/components/ui/footer';
 import Navbar from '@/components/ui/main-nav';
 
 
@@ -14,6 +16,8 @@ export default function Page() {
       </div>
       <div className="mx-auto mt-28 max-w-[1180px] px-4">
         <Hero />
+        <HowItWorks />
+        <Footer />
       </div>
     
       </section>

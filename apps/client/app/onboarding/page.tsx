@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,28 +9,57 @@ import {
     WalletModalProvider,
     WalletMultiButton
 } from '@solana/wallet-adapter-react-ui';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { toast } from "sonner";
-import { ArrowRight, Upload,  Wallet, WalletIcon } from "lucide-react";
+import { ArrowRight, Upload, Wallet, WalletIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { onboardUser } from "@/actions/onboardUser";
+import { useRouter } from "next/navigation";
 
+enum CreatorType {
+  Youtuber = "Youtuber",
+  Musician = "Musician",
+  other = "other"
+}
+
+enum ExperienceWithDigitalAssets {
+  Beginner = "Beginner",
+  Intermediate = "Intermediate",
+  Advance = "Advance"
+}
 export interface FormData {
-  creatorType: "Youtuber" | "Musician" | "other";
+  creatorType: CreatorType;
   socialMedia: string;
-  experience: "Beginner" | "Intermediate" | "Advance";
+  experience: ExperienceWithDigitalAssets;
   walletConnected: boolean;
-  userid?: string
+  walletAddress?: string;
+  userid?: string;
 }
 
 export default function OnboardingPage() {
   const [step, setStep] = useState<number>(1);
-  const {data} = useSession();
+  const { data } = useSession();
+  const { publicKey, connected } = useWallet();
+  const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
-    creatorType: "Youtuber",
+    creatorType: CreatorType.Youtuber,
     socialMedia: "",
-    experience: "Beginner",
+    experience: ExperienceWithDigitalAssets.Beginner,
     walletConnected: false,
   });
+
+  // Update form data when wallet connection changes
+  useEffect(() => {
+    if (connected && publicKey) {
+      const walletAddress = publicKey.toString();
+      setFormData(prev => ({ 
+        ...prev, 
+        walletConnected: true,
+        walletAddress: walletAddress
+      }));
+      console.log("Wallet connected with address:", walletAddress);
+    }
+  }, [connected, publicKey]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -40,25 +69,40 @@ export default function OnboardingPage() {
   const connectWallet = async () => {
     try {
       console.log("Connecting to Solana wallet...");
-      formData.userid = data?.user.id
       
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setFormData(prev => ({ ...prev, walletConnected: true }));
-      
-      console.log("Form data ready for API call:", {
-        ...formData,
-        walletConnected: true
-      });
-      
-      const response = await onboardUser(formData);
-
-      if(response.success){
-        toast.success("Wallet connected successfully!");
-      }else{
-        toast.error(`Connection Failed ${err}`);
+      // Check if wallet is connected and public key exists
+      if (connected && publicKey) {
+        const walletAddress = publicKey.toString();
+        console.log("Wallet address:", walletAddress);
+        
+        formData.userid = data?.user.id;
+        
+        // Add wallet address to form data
+        setFormData(prev => ({ 
+          ...prev, 
+          walletConnected: true,
+          walletAddress: walletAddress
+        }));
+        
+        console.log("Form data ready for API call:", {
+          ...formData,
+          walletConnected: true,
+          walletAddress: walletAddress
+        });
+        
+        const response = await onboardUser({
+          ...formData,
+          walletAddress: walletAddress
+        });
+        console.log("response---", response)
+        if(response.success){
+          toast.success("Wallet connected successfully!");
+        } else {
+          toast.error(`Connection Failed ${response.error || "Unknown error"}`);
+        }
+      } else {
+        toast.info("Please connect your wallet using the wallet button");
       }
-      
     } catch (err) {
       toast.error(`Connection Failed ${err}`);
     }
@@ -75,11 +119,18 @@ export default function OnboardingPage() {
     if (step < 2) {
       setStep(step + 1);
     } else {
-      // Complete onboarding
-      toast(
-       "You have successfully completed the onboarding process!",
-      );
-      // In a real app, you would redirect to dashboard or home page
+      connectWallet().then((e)=> {
+        toast.success(
+         "You have successfully completed the onboarding process!",
+        );
+        localStorage.setItem("isOnboarded", "true")
+        router.replace("/")
+
+      }).catch((e)=> {
+        toast.error(
+          "Something went wrong please try again once!",
+         );
+      });
     }
   };
 
@@ -90,7 +141,7 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen ">
+    <div className="flex items-center justify-center min-h-screen">
       <div className="w-full max-w-3xl px-4">
         {/* Stepper */}
         <div className="mb-8">
@@ -135,10 +186,9 @@ export default function OnboardingPage() {
                     value={formData.creatorType} 
                     onChange={handleInputChange}
                   >
-                    <option value="artist">Digital Artist</option>
-                    <option value="musician">Musician</option>
-                    <option value="collector">Collector</option>
-                    <option value="other">Other</option>
+                    <option value={CreatorType.Musician}>Musician</option>
+                    <option value={CreatorType.Youtuber}>Youtuber</option>
+                    <option value={CreatorType.other}>Other</option>
                   </select>
                 </div>
                 <div className="space-y-2">
@@ -160,9 +210,9 @@ export default function OnboardingPage() {
                     value={formData.experience} 
                     onChange={handleInputChange}
                   >
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="advanced">Advanced</option>
+                    <option value={ExperienceWithDigitalAssets.Beginner}>Beginner</option>
+                    <option value={ExperienceWithDigitalAssets.Intermediate}>Intermediate</option>
+                    <option value={ExperienceWithDigitalAssets.Advance}>Advanced</option>
                   </select>
                 </div>
               </CardContent>
@@ -187,38 +237,53 @@ export default function OnboardingPage() {
                       Connect your Solana wallet to access all features of our platform.
                     </p>
                     {formData.walletConnected ? (
-                      <div className="flex items-center space-x-2 text-green-600">
-                        <svg 
-                          xmlns="http://www.w3.org/2000/svg" 
-                          className="h-5 w-5" 
-                          viewBox="0 0 20 20" 
-                          fill="currentColor"
-                        >
-                          <path 
-                            fillRule="evenodd" 
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" 
-                            clipRule="evenodd" 
-                          />
-                        </svg>
-                        <span>Wallet Connected Successfully</span>
+                      <div className="flex flex-col items-center space-y-2">
+                        <div className="flex items-center space-x-2 text-green-600">
+                          <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            className="h-5 w-5" 
+                            viewBox="0 0 20 20" 
+                            fill="currentColor"
+                          >
+                            <path 
+                              fillRule="evenodd" 
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" 
+                              clipRule="evenodd" 
+                            />
+                          </svg>
+                          <span>Wallet Connected Successfully</span>
+                        </div>
+                        {formData.walletAddress && (
+                          <div className="mt-2 p-2 rounded-md">
+                            <p className="text-sm font-mono break-all">
+                              {formData.walletAddress}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     ) : (
-                      <Button 
-                        onClick={connectWallet} 
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
-                      >
-                         <WalletIcon
-                            className='size-5'
-                        />
-                         <WalletModalProvider>
-                            <div className="flex justify-between gap-2">
+                      <div>
+                        <WalletModalProvider>
+                          <div className="flex justify-between gap-2">
                             <WalletMultiButton style={{ 
-                                background: 'transparent', 
-                                }} 
-                            />
-                            </div>
+                              background: 'rgb(37 99 235)', 
+                              color: 'white',
+                              padding: '8px 16px',
+                              borderRadius: '0.375rem',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '8px'
+                            }} />
+                          </div>
                         </WalletModalProvider>
-                      </Button>
+                        <Button 
+                          onClick={connectWallet} 
+                          className="bg-blue-600 hover:bg-blue-700 text-white mt-4"
+                        >
+                          <WalletIcon className="size-5 mr-2" />
+                          Complete Connection
+                        </Button>
+                      </div>
                     )}
                   </div>
                 </div>
