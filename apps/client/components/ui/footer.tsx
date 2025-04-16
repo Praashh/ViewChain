@@ -1,4 +1,4 @@
-import { ArrowUpRight, Github, Twitter, X, XIcon } from 'lucide-react';
+import { ArrowUpRight, Github, Twitter } from 'lucide-react';
 import React from 'react';
 import Link from 'next/link';
 
@@ -22,12 +22,12 @@ export default function Footer() {
               <Github className="h-6 w-6" />
             </Link>
             <Link href={'https://x.com/10xpraash/'}>
-              <Twitter className="h-6 w-6 dark:invert text-white" />
+              <Twitter className="h-6 w-6" />
             </Link>
           </div>
           |
           <p className="text-sm dark:text-gray-300">
-            Designed and Developed by{' '}
+            Developed by{' '}
             <span className="cursor-pointer underline hover:text-primary">
               Praash aka Harry Potter
             </span>

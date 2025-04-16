@@ -23,16 +23,41 @@ model User {
   creatorType         CreatorType?  @default(Youtuber)
   socialHandle  String?   @unique
   experience  ExperienceWithDigitalAssets? @default(Beginner)
-  asset  Assets[]
+  asset  AssetsCollection[]
 }
 
-model Assets {
+model AssetsCollection {
   id String @id @default(uuid())
+  name String
+  description String
+  category AssetsCollectionCategory
   userId  String
   user User  @relation(fields: [userId], references: [id])
+  asset Asset []
+}
+
+model Asset {
+  id String @id @default(uuid())
+  assetType AssetType
+  asseturl  String
+  collectionId String
+  AssetsCollection AssetsCollection @relation(fields: [collectionId], references: [id])
+}
+
+
+enum AssetType {
+  Video
+  Image
+  Audio
 }
 
 enum CreatorType {
+  Youtuber
+  Musician
+  other
+}
+
+enum AssetsCollectionCategory {
   Youtuber
   Musician
   other

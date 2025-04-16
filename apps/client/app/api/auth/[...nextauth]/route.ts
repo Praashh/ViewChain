@@ -8,6 +8,7 @@ declare module 'next-auth' {
       id: string;
       name?: string | null;
       email?: string | null;
+      isOnboarded?: boolean
     }
   }
 }
@@ -56,10 +57,11 @@ const authOptions: NextAuthOptions = {
         if (userFromDb) {
             session.user.id = userFromDb.id;
             session.user.name = userFromDb.name;
+            session.user.isOnboarded = userFromDb.isOnboarded
         }
 
         return session;
-    },
+    }
 },
   secret: process.env.NEXTAUTH_SECRET,
 };
