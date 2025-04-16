@@ -13,7 +13,7 @@ export default function HeroButtons() {
     if (!user) {
       await signIn();
     }
-    router.push('/work/dashboard');
+    router.push('/marketplace');
   };
 
   return (
@@ -24,7 +24,7 @@ export default function HeroButtons() {
       >
         {user ? (
           <>
-            <span className="mr-2">Dashboard</span>
+            <span className="mr-2">MarketPlace</span>
             {/* <img
               className="h-6 w-6 rounded-md shadow-xl"
               width={100}

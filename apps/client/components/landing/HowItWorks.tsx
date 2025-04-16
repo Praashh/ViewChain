@@ -1,15 +1,8 @@
 'use client';
 
 import {
-  Building,
   ChartNetwork,
-  FileText,
   FolderIcon,
-  GitPullRequest,
-  Share,
-  Share2,
-  Upload,
-  UserCheck,
   UserPlus,
   VideoIcon,
 } from 'lucide-react';
