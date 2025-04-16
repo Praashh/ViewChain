@@ -1,23 +1,9 @@
 "use client"
-
-import * as React from "react"
 import {
-  ArrowUpCircleIcon,
   BarChartIcon,
-  CameraIcon,
-  ClipboardListIcon,
-  DatabaseIcon,
-  FileCodeIcon,
-  FileIcon,
-  FileTextIcon,
   FolderIcon,
-  HelpCircleIcon,
   LayoutDashboardIcon,
-  ListIcon,
-  SearchIcon,
-  SettingsIcon,
   TrendingUp,
-  UsersIcon,
   View,
 } from "lucide-react"
 
@@ -34,38 +20,45 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
+import { useSession } from "next-auth/react"
+import { useEffect, useState } from "react"
 
 const data = {
-  user: {
-    name: "praash",
-    email: "praashh.xyz",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "MarketPace",
-      url: "#",
+      url: "/marketplace",
       icon: LayoutDashboardIcon,
     },
     {
       title: "Trend",
-      url: "#",
+      url: "/marketplace/trend",
       icon: TrendingUp,
     },
     {
       title: "Analytics",
-      url: "#",
+      url: "/marketplace/analytics",
       icon: BarChartIcon,
     },
     {
       title: "Collection",
-      url: "#",
+      url: "/marketplace/create-collection",
       icon: FolderIcon,
     }
   ],
 }
-
+export interface TSessionUser {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+}
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const {data: userData}  =  useSession();
+  const [user, setUser] = useState<TSessionUser>();
+
+  useEffect(()=>{
+    setUser(userData?.user)
+  }, [])
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -87,7 +80,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user as TSessionUser} />
       </SidebarFooter>
     </Sidebar>
   )
