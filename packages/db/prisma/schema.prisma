@@ -32,6 +32,7 @@ model AssetsCollection {
   description String
   category AssetsCollectionCategory
   userId  String
+  underdogProjectId Int @default(0)
   user User  @relation(fields: [userId], references: [id])
   asset Asset []
 }

@@ -5,6 +5,8 @@ import { toast } from "sonner"
 import AssetsCollectionGrid from "../ui/asset-collection-grid"
 import { useAuth } from "@/hooks/useAuth"
 import { getAssetCollections } from "@/actions/getAssetCollections"
+import { useRouter } from "next/navigation"
+import { deleteAssetCollection } from "@/actions/deleteAssetCollection"
 
 interface Collection {
   id: string;
@@ -18,6 +20,7 @@ export default function AssetsCollection() {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const router = useRouter();
   
   useEffect(() => {
     const fetchCollections = async () => {
@@ -44,16 +47,21 @@ export default function AssetsCollection() {
   }, []);
 
   const handleView = (id: string) => {
-    toast(`You are viewing collection with ID: ${id}`);
+     router.push(`/marketplace/create-collection/${id}`)
   }
 
   const handleEdit = (id: string) => {
     toast(`You are editing collection with ID: ${id}`);
   }
 
-  const handleDelete = (id: string) => {
-    toast(`Collection with ID: ${id} has been deleted`);
-    setCollections(collections.filter((collection) => collection.id !== id));
+  const handleDelete = async(id: string) => {
+   const result = await deleteAssetCollection(id);
+    if(result.success){
+      setCollections(collections.filter((collection) => collection.id !== id));
+      toast.success(result.message as string)
+    }else{
+      toast.error(result.message as string)
+    }
   }
 
   if (loading) {
