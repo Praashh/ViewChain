@@ -2,13 +2,12 @@
 
 import { Badge } from "@/components/ui/badge"
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { MoreHorizontal, Folder } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import Image from "next/image"
 
-// This would typically come from your database schema
-type AssetsCollectionCategory = "IMAGES" | "DOCUMENTS" | "VIDEOS" | "AUDIO" | "OTHER"
+type AssetsCollectionCategory = "IMAGES" | "VIDEOS" | "AUDIO" | "OTHER"
 
 interface AssetsCollectionProps {
   collection: {
@@ -16,6 +15,7 @@ interface AssetsCollectionProps {
     name: string
     description: string
     category: AssetsCollectionCategory
+    collectionImageUrl?: string | null
     userId?: string
     user?: {
       name?: string
@@ -53,10 +53,19 @@ export default function AssetsCollectionCard({
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md">
       <div className="aspect-video bg-muted relative overflow-hidden">
-       
+        {collection.collectionImageUrl ? (
+          <Image 
+            src={collection.collectionImageUrl} 
+            width={100}
+            height={100}
+            alt={collection.name} 
+            className="w-full h-full object-cover"
+          />
+        ) : (
           <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-blue-400">
             <Folder className="h-16 w-16 text-slate-400" />
           </div>
+        )}
       </div>
 
       <CardHeader className="p-4">
@@ -84,7 +93,7 @@ export default function AssetsCollectionCard({
         <CardDescription className="line-clamp-2 mt-1">{collection.description}</CardDescription>
       </CardHeader>
 
-      <CardFooter className="p-4 pt-0 w-full  flex justify-between items-center">
+      <CardFooter className="p-4 pt-0 w-full flex justify-between items-center">
         <Button variant="outline" size="sm" className="w-full" onClick={() => onView(collection.id)}>
           View
         </Button>
