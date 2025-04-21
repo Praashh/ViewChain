@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { SidebarMenuButton } from "./sidebar";
-import { PlusCircleIcon } from "lucide-react";
+import { PlusCircleIcon, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -33,9 +33,11 @@ export enum AssetsCollectionCategory {
 }
 
 export interface TCollectionData {
-  name: string,
-  description: string,
-  category: AssetsCollectionCategory
+  name: string;
+  description: string;
+  category: AssetsCollectionCategory;
+  coverImage?: File | null;
+  coverImageUrl?: string;
 }
 
 const CreateCollectionButton = () => {
@@ -43,10 +45,35 @@ const CreateCollectionButton = () => {
     category: AssetsCollectionCategory.other,
     description: "",
     name: "",
+    coverImage: null,
+    coverImageUrl: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const user = useAuth();
+
+  // Generate preview URL when image is selected
+  useEffect(() => {
+    if (collectionData.coverImage) {
+      const objectUrl = URL.createObjectURL(collectionData.coverImage);
+      setPreviewUrl(objectUrl);
+      
+      // Clean up the URL when component unmounts or when image changes
+      return () => URL.revokeObjectURL(objectUrl);
+    } else {
+      setPreviewUrl(null);
+    }
+  }, [collectionData.coverImage]);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("file ---", e.target.files)
+    const file = e.target.files?.[0] || null;
+    setCollectionData((prev) => ({
+      ...prev,
+      coverImage: file,
+    }));
+  };
 
   const handleSubmit = async () => {
     if (!user.isLoggedIn) {
@@ -60,9 +87,12 @@ const CreateCollectionButton = () => {
     }
 
     setIsLoading(true);
-    
+    const formData = new FormData();
+    if (collectionData.coverImage) {
+      formData.append('coverImage', collectionData.coverImage);
+    }
     try {
-      const result = await createAssetCollection(collectionData, user.user?.id!);
+      const result = await createAssetCollection(collectionData, formData, user.user?.id!);
 
       if (!result.success) {
         toast.error(result.message || "Failed to create collection");
@@ -72,7 +102,10 @@ const CreateCollectionButton = () => {
           category: AssetsCollectionCategory.other,
           description: "",
           name: "",
+          coverImage: null,
+          coverImageUrl: "",
         });
+        setPreviewUrl(null);
         setIsOpen(false);
       }
     } catch (error) {
@@ -112,7 +145,7 @@ const CreateCollectionButton = () => {
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
+            <Label htmlFor="description" className="text-right">
               Description
             </Label>
             <Input 
@@ -138,10 +171,41 @@ const CreateCollectionButton = () => {
                   <SelectLabel>Category</SelectLabel>
                   <SelectItem value={AssetsCollectionCategory.Youtuber}>Youtuber</SelectItem>
                   <SelectItem value={AssetsCollectionCategory.Musician}>Musician</SelectItem>
-                  <SelectItem value={AssetsCollectionCategory.other}>other</SelectItem>
+                  <SelectItem value={AssetsCollectionCategory.other}>Other</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="coverImage" className="text-right">
+              Cover Image
+            </Label>
+            <div className="col-span-3">
+              <div className="flex items-center gap-4">
+                <Input 
+                  id="coverImage" 
+                  type="file"
+                  accept="image/*"
+                  className="flex-1" 
+                  onChange={handleImageChange}
+                />
+                {previewUrl && (
+                  <div className="relative w-12 h-12 rounded overflow-hidden">
+                    <img 
+                      src={previewUrl} 
+                      alt="Cover preview" 
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                )}
+                {!previewUrl && (
+                  <div className="flex items-center justify-center w-12 h-12 bg-gray-700 rounded">
+                    <ImageIcon className="w-6 h-6 text-gray-400" />
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-gray-400 mt-1">Upload a cover image for your collection (optional)</p>
+            </div>
           </div>
         </div>
         <DialogFooter>
