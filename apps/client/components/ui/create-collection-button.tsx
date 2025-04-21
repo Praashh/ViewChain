@@ -87,9 +87,12 @@ const CreateCollectionButton = () => {
     }
 
     setIsLoading(true);
-    
+    const formData = new FormData();
+    if (collectionData.coverImage) {
+      formData.append('coverImage', collectionData.coverImage);
+    }
     try {
-      const result = await createAssetCollection(collectionData, user.user?.id!);
+      const result = await createAssetCollection(collectionData, formData, user.user?.id!);
 
       if (!result.success) {
         toast.error(result.message || "Failed to create collection");

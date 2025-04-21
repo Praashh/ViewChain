@@ -32,6 +32,7 @@ model AssetsCollection {
   description String
   category AssetsCollectionCategory
   userId  String
+  collectionImageUrl  String?
   underdogProjectId Int @default(0)
   user User  @relation(fields: [userId], references: [id])
   asset Asset []
@@ -39,8 +40,11 @@ model AssetsCollection {
 
 model Asset {
   id String @id @default(uuid())
+  name String
+  symbol String
+  description String
+  imageurl  String
   assetType AssetType
-  asseturl  String
   collectionId String
   AssetsCollection AssetsCollection @relation(fields: [collectionId], references: [id])
 }

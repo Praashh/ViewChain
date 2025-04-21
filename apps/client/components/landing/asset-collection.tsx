@@ -14,6 +14,7 @@ interface Collection {
   description: string;
   category: any;
   userId: string;
+  collectionImageUrl?: string | null
 }
 
 export default function AssetsCollection() {
@@ -45,6 +46,8 @@ export default function AssetsCollection() {
 
     fetchCollections();
   }, []);
+
+  console.log("collections--", collections)
 
   const handleView = (id: string) => {
      router.push(`/marketplace/create-collection/${id}`)

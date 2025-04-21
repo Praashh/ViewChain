@@ -8,6 +8,7 @@ interface Collection {
   description: string;
   category: any;
   userId: string;
+  collectionImageUrl?:string | null
 }[] 
 
 interface AssetsCollectionGridProps {
