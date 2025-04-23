@@ -8,7 +8,14 @@ export function SiteHeader() {
     const heading = pathName.split("/")
     const lastSegment = heading[heading.length-1]
     
-    const formattedHeading = lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1).toLowerCase()
+    let formattedHeading = lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1).toLowerCase()
+    // if not any of heading page then it'll be asset page 
+    if(!formattedHeading.startsWith("MarketPlace") && 
+    !formattedHeading.startsWith("Trend") && 
+    !formattedHeading.startsWith("Analytics") && 
+    !formattedHeading.startsWith("Create-collection")) {
+     formattedHeading = "Asset Page";
+ }
     
     return (
         <header className="group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 flex h-12 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear">

@@ -177,8 +177,8 @@ const CreateCollectionButton = () => {
             </Select>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="coverImage" className="text-right">
-              Cover Image
+            <Label htmlFor="coverImage" className="text-right mb-6">
+             Cover Pic
             </Label>
             <div className="col-span-3">
               <div className="flex items-center gap-4">

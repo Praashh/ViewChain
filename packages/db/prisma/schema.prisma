@@ -44,17 +44,16 @@ model Asset {
   symbol String
   description String
   imageurl  String
-  assetType AssetType
+  assetUrl  String
+  assetType String
+  mint   String @unique
+  signature String @unique
+  metadata String 
+  analytics Json
   collectionId String
   AssetsCollection AssetsCollection @relation(fields: [collectionId], references: [id])
 }
 
-
-enum AssetType {
-  Video
-  Image
-  Audio
-}
 
 enum CreatorType {
   Youtuber
