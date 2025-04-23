@@ -3,9 +3,8 @@ import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
 
 export const useAuth = () => {
-    const [user, setUser] = useState<{ id: string; name?: string | null | undefined; email?: string | null | undefined; }>();
+    const [user, setUser] = useState<any>();
     const { data } = useSession();
-    
     useEffect(() => {
         if (data?.user) {
             setUser(data.user);

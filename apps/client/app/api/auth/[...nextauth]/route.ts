@@ -9,6 +9,8 @@ declare module 'next-auth' {
       name?: string | null;
       email?: string | null;
       isOnboarded?: boolean
+      publicKey?: string
+      socialHandle?: string 
     }
   }
 }
@@ -58,6 +60,8 @@ const authOptions: NextAuthOptions = {
             session.user.id = userFromDb.id;
             session.user.name = userFromDb.name;
             session.user.isOnboarded = userFromDb.isOnboarded
+            session.user.publicKey =  userFromDb.publicKey
+            session.user.socialHandle = userFromDb.socialHandle
         }
 
         return session;
