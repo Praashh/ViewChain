@@ -3,6 +3,7 @@ import Hero from '@/components/landing/hero';
 import HowItWorks from '@/components/landing/HowItWorks';
 import Footer from '@/components/ui/footer';
 import Navbar from '@/components/ui/main-nav';
+import VideoPlayer from '@/components/ui/video-player';
 
 
 export default function Page() {
@@ -19,7 +20,11 @@ export default function Page() {
         <HowItWorks />
         <Footer />
       </div>
-    
+
+
+      {/* <VideoPlayer src="https://devnet.irys.xyz/BKv4p7gVmo9PX6hh5hd2kDX32UYVRWhHMBvS9yZK32jE" /> */}
+
+
       </section>
     );
 }

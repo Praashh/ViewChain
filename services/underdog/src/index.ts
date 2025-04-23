@@ -1,12 +1,22 @@
 import underdog from "@api/underdog";
 import dotenv  from "dotenv";
-import { createCollectionSchema, getAllCollectionsSchema } from "./schemas";
+import { createCollectionSchema, createNftParamSchema, getAllCollectionsSchema, projectIdSchema } from "./schemas";
 import z from "zod";
+import { uploadMediaOnIrys } from "./media-upload";
+import { uploadMetada } from "./metadata-upload";
+import {mintNft} from "./nft-mint"
 
 dotenv.config();
 
 type TCreateCollection = z.infer<typeof createCollectionSchema>
 type TGetAllCollections = z.infer<typeof getAllCollectionsSchema>
+type TcreateNftParam = z.infer<typeof createNftParamSchema >
+type TProjectId = z.infer< typeof projectIdSchema >
+
+
+
+
+
 
 /**
  * Underdog service
@@ -68,6 +78,21 @@ export class Underdog {
       throw error;
     }
   }
+
+  async createNft (params: TcreateNftParam, projectId: TProjectId) {
+    try {
+      const response = await underdog.postV2ProjectsProjectidNfts(params, projectId);
+      console.log(response.data);
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error) {
+      console.error(`Error while getting collections: ${error}`);
+      throw error;
+    }
+
+  }
 }
 
 // const UClient = new Underdog();
@@ -90,3 +115,37 @@ export class Underdog {
 //     core: true,
 //     sellerFeeBasisPoints: 100
 //   }
+
+
+// create Nft example params 
+/*
+{
+  attributes: {
+    points: 10,
+    name: 'praash',
+    song: 'ShutDown', // This will be allowed
+  },
+  receiver: {
+    address: 'D9D2an4u2jo87VnvqkVabhfbg8N4tbfn5Yu488hYevb7',
+    namespace: 'public',
+    identifier: 'praash@example.com',
+  },
+  name: 'Praash NFT',
+  symbol: 'pNFT',
+  description: 'Praash minted this NFT with the Underdog API',
+  image: 'https://hatrabbits.com/wp-content/uploads/2017/01/random.jpg',
+  animationUrl: 'https://i.imgur.com/mGfz7Ig.mp4',
+  externalUrl: 'https://app.underdogprotocol.com',
+  delegated: true,
+}
+
+{
+ projectId: 10 // number
+}
+*/
+
+export { 
+  uploadMediaOnIrys,
+  uploadMetada,
+  mintNft
+};

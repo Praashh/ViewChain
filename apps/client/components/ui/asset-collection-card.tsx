@@ -7,7 +7,7 @@ import { MoreHorizontal, Folder } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import Image from "next/image"
 
-type AssetsCollectionCategory = "IMAGES" | "VIDEOS" | "AUDIO" | "OTHER"
+type AssetsCollectionCategory = "Youtuber" | "Musician" | "other" 
 
 interface AssetsCollectionProps {
   collection: {
@@ -16,6 +16,7 @@ interface AssetsCollectionProps {
     description: string
     category: AssetsCollectionCategory
     collectionImageUrl?: string | null
+    underdogProjectId: number
     userId?: string
     user?: {
       name?: string
@@ -39,11 +40,11 @@ export default function AssetsCollectionCard({
   // Get appropriate icon color based on category
   const getCategoryColor = (category: AssetsCollectionCategory) => {
     switch (category) {
-      case "IMAGES":
-        return "bg-blue-100 text-blue-800 hover:bg-blue-200"
-      case "VIDEOS":
+      case "Musician":
+        return "bg-blue-300 text-blue-800 hover:bg-blue-200"
+      case "Youtuber":
         return "bg-purple-100 text-purple-800 hover:bg-purple-200"
-      case "AUDIO":
+      case "other":
         return "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
       default:
         return "bg-gray-100 text-gray-800 hover:bg-gray-200"
@@ -94,7 +95,7 @@ export default function AssetsCollectionCard({
       </CardHeader>
 
       <CardFooter className="p-4 pt-0 w-full flex justify-between items-center">
-        <Button variant="outline" size="sm" className="w-full" onClick={() => onView(collection.id)}>
+        <Button variant="outline" size="sm" className="w-full" onClick={() => onView(collection.id + `?projectId=${collection.underdogProjectId}`)}>
           View
         </Button>
       </CardFooter>

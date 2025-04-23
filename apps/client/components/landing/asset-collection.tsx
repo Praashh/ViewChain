@@ -14,6 +14,7 @@ interface Collection {
   description: string;
   category: any;
   userId: string;
+  underdogProjectId: number
   collectionImageUrl?: string | null
 }
 
