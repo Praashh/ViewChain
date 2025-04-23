@@ -9,8 +9,13 @@
   "description": "This service is responsible for handling all requests to the NFT & NFT Collection miniting, creation and all.",
   "dependencies": {
     "@api/underdog": "file:.api/apis/underdog",
+    "@metaplex-foundation/mpl-token-metadata": "^3.4.0",
+    "@metaplex-foundation/umi": "^1.2.0",
+    "@metaplex-foundation/umi-bundle-defaults": "^1.2.0",
+    "@metaplex-foundation/umi-uploader-irys": "^1.2.0",
     "@types/node": "^22.14.1",
     "axios": "^1.8.4",
+    "bs58": "^6.0.0",
     "dotenv": "^16.5.0",
     "zod": "^3.24.3"
   },
