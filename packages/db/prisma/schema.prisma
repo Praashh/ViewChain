@@ -46,8 +46,6 @@ model Asset {
   imageurl  String
   assetUrl  String
   assetType String
-  mint   String @unique
-  signature String @unique
   metadata String 
   analytics Json
   collectionId String
