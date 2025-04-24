@@ -11,10 +11,11 @@ import {
 } from '@solana/wallet-adapter-react-ui';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { toast } from "sonner";
-import { ArrowRight, Upload, Wallet, WalletIcon } from "lucide-react";
+import { ArrowRight, Upload, Wallet, WalletIcon, BadgeCheck } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { onboardUser } from "@/actions/onboardUser";
 import { useRouter } from "next/navigation";
+import ReclaimVerification from "@/components/ui/reclaim-verification";
 
 enum CreatorType {
   Youtuber = "Youtuber",
@@ -27,6 +28,19 @@ enum ExperienceWithDigitalAssets {
   Intermediate = "Intermediate",
   Advance = "Advance"
 }
+
+enum SocialAccount {
+  Youtube = "Youtube",
+  Instagram = "Instagram",
+  Twitter = "Twitter"
+}
+enum VerificationStatus {
+  NotStarted = "NotStarted",
+  InProgress = "InProgress",
+  Verified = "Verified",
+  Failed = "Failed"
+}
+
 export interface FormData {
   creatorType: CreatorType;
   socialMedia: string;
@@ -34,6 +48,8 @@ export interface FormData {
   walletConnected: boolean;
   walletAddress?: string;
   userid?: string;
+  verificationStatus: VerificationStatus;
+  socialAccount: SocialAccount
 }
 
 export default function OnboardingPage() {
@@ -44,8 +60,10 @@ export default function OnboardingPage() {
   const [formData, setFormData] = useState<FormData>({
     creatorType: CreatorType.Youtuber,
     socialMedia: "",
+    socialAccount: SocialAccount.Instagram,
     experience: ExperienceWithDigitalAssets.Beginner,
     walletConnected: false,
+    verificationStatus: VerificationStatus.NotStarted
   });
 
   // Update form data when wallet connection changes
@@ -108,6 +126,38 @@ export default function OnboardingPage() {
     }
   };
 
+  const handleVerification = (status: VerificationStatus) => {
+    setFormData(prev => ({
+      ...prev,
+      verificationStatus: status
+    }));
+    
+    if (status === VerificationStatus.Verified) {
+      toast.success("Identity verification successful!");
+    } else if (status === VerificationStatus.Failed) {
+      toast.error("Identity verification failed. Please try again.");
+    }
+  };
+
+  const completeOnboarding = async () => {
+    try {
+      // Final submission with all data
+      const response = await onboardUser({
+        ...formData
+      });
+      
+      if (response.success) {
+        toast.success("You have successfully completed the onboarding process!");
+        localStorage.setItem("isOnboarded", "true");
+        router.replace("/");
+      } else {
+        toast.error(`Onboarding failed: ${response.error || "Unknown error"}`);
+      }
+    } catch (error) {
+      toast.error("Something went wrong. Please try again!");
+    }
+  };
+
   const nextStep = () => {
     if (step === 1) {
       if (!formData.socialMedia || !formData.creatorType || !formData.experience) {
@@ -116,21 +166,19 @@ export default function OnboardingPage() {
       }
     }
 
-    if (step < 2) {
+    if (step === 2 && !formData.walletConnected) {
+      toast.error("Please connect your wallet to continue.");
+      return;
+    }
+
+    if (step < 3) {
       setStep(step + 1);
     } else {
-      connectWallet().then((e)=> {
-        toast.success(
-         "You have successfully completed the onboarding process!",
-        );
-        localStorage.setItem("isOnboarded", "true")
-        router.replace("/")
-
-      }).catch((e)=> {
-        toast.error(
-          "Something went wrong please try again once!",
-         );
-      });
+      if (formData.verificationStatus !== VerificationStatus.Verified) {
+        toast.error("Please complete identity verification to continue.");
+        return;
+      }
+      completeOnboarding();
     }
   };
 
@@ -158,8 +206,16 @@ export default function OnboardingPage() {
               stepNumber={2} 
               title="Connect Wallet" 
               active={step === 2} 
-              completed={false} 
+              completed={step > 2} 
               icon={<Wallet className="h-5 w-5" />} 
+            />
+            <StepConnector completed={step > 2} />
+            <StepIndicator 
+              stepNumber={3} 
+              title="Verify Identity" 
+              active={step === 3} 
+              completed={false} 
+              icon={<BadgeCheck className="h-5 w-5" />} 
             />
           </div>
         </div>
@@ -213,6 +269,20 @@ export default function OnboardingPage() {
                     <option value={ExperienceWithDigitalAssets.Beginner}>Beginner</option>
                     <option value={ExperienceWithDigitalAssets.Intermediate}>Intermediate</option>
                     <option value={ExperienceWithDigitalAssets.Advance}>Advanced</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="creatorType">Social Account for Verification</Label>
+                  <select 
+                    id="verifiedAccount" 
+                    name="verifiedAccount" 
+                    className="w-full p-2 border rounded-md"
+                    value={formData.socialAccount} 
+                    onChange={handleInputChange}
+                  >
+                    <option value={SocialAccount.Instagram}>Instagram</option>
+                    <option value={SocialAccount.Youtube}>Youtube</option>
+                    <option value={SocialAccount.Twitter}>Twitter</option>
                   </select>
                 </div>
               </CardContent>
@@ -291,6 +361,21 @@ export default function OnboardingPage() {
             </>
           )}
 
+          {/* Step 3: Identity Verification with Reclaim */}
+          {step === 3 && (
+            <>
+              <CardHeader>
+                <CardTitle>Verify Your Identity</CardTitle>
+                <CardDescription>
+                  Complete identity verification to ensure security and compliance.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+              <ReclaimVerification account={formData.socialAccount}/>
+              </CardContent>
+            </>
+          )}
+
           <CardFooter className="flex justify-between">
             <Button 
               variant="outline" 
@@ -301,11 +386,12 @@ export default function OnboardingPage() {
             </Button>
             <Button 
               onClick={nextStep} 
-              disabled={step === 2 && !formData.walletConnected}
+              disabled={(step === 2 && !formData.walletConnected) || 
+                       (step === 3 && formData.verificationStatus !== VerificationStatus.Verified)}
               className="bg-blue-600 hover:bg-blue-700"
             >
-              {step === 2 ? "Complete" : "Continue"}
-              {step < 2 && <ArrowRight className="ml-2 h-4 w-4" />}
+              {step === 3 ? "Complete" : "Continue"}
+              {step < 3 && <ArrowRight className="ml-2 h-4 w-4" />}
             </Button>
           </CardFooter>
         </Card>
@@ -380,3 +466,9 @@ function StepConnector({ completed }: StepConnectorProps) {
     </div>
   );
 }
+
+interface ReclaimVerificationProps {
+  onVerificationStatusChange: (status: VerificationStatus) => void;
+  verificationStatus: VerificationStatus;
+}
+
