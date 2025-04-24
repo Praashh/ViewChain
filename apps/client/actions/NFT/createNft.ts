@@ -2,7 +2,7 @@
 import { TNftData } from "@/components/ui/create-asset-button"
 import { uploadAssetToCloudinary } from "@/config/cloudinary";
 import { prisma } from "@repo/db/client"
-import { mintNft, Underdog, uploadMediaOnIrys, uploadMetada } from '@repo/underdog';
+import { Underdog, uploadMediaOnIrys, uploadMetada } from '@repo/underdog';
 
 export async function createNft(params : TNftData, imageData: FormData, projectId: number, user:any, collectionId: string ){
     try {
@@ -62,15 +62,6 @@ export async function createNft(params : TNftData, imageData: FormData, projectI
             return;
         }
 
-        const metaplexNft = await mintNft({
-            isCollection: true,
-            name, 
-            symbol, 
-            uri: metadata[0]
-        });
-
-        console.log('newNft', metaplexNft);
-            // Check cover image upload result
         const newNft = await prisma.asset.create({
             data:{
                 name,
@@ -78,8 +69,6 @@ export async function createNft(params : TNftData, imageData: FormData, projectI
                 imageurl: coverImageUploadResult?.result?.secure_url,
                 assetUrl: imageAsset!,
                 metadata: metadata[0],
-                mint: metaplexNft?.mint!,
-                signature: metaplexNft?.signature,
                 symbol,
                 assetType: file.type,
                 collectionId,
