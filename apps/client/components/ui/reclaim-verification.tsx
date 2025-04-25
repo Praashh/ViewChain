@@ -9,10 +9,13 @@ interface Proof {
   claimData: object;
   ownerPublicKey: string;
 }
-interface ReclaimVerificationProps{
-    account: "Instagram" | "Youtube" | "Twitter"
+
+interface ReclaimVerificationProps {
+  account: string;
+  onVerificationComplete: (status: 'verified' | 'failed', proofs?: Proof[]) => void;
 }
-export default function ReclaimVerification({account}:ReclaimVerificationProps) {
+
+export default function ReclaimVerification({ account, onVerificationComplete }: ReclaimVerificationProps) {
   const [requestUrl, setRequestUrl] = useState<string>('');
   const [proofs, setProofs] = useState<Proof[] | null>(null);
   const [status, setStatus] = useState<'initializing' | 'ready' | 'verifying' | 'success' | 'error'>('initializing');
@@ -49,16 +52,22 @@ export default function ReclaimVerification({account}:ReclaimVerificationProps) 
           console.log('Verification success', proofs);
           setProofs(proofs as any);
           setStatus('success');
+          
+          // Call the callback to update parent component
+          onVerificationComplete('verified', proofs as any);
+          
           if (typeof window !== 'undefined') {
             localStorage.setItem('reclaimVerificationStatus', 'verified');
             localStorage.setItem('reclaimProofs', JSON.stringify(proofs));
           }
-          
         },
         onError: (error: Error) => {
           console.error('Verification failed', error);
           setErrorMessage(error.message || 'Verification failed');
           setStatus('error');
+          
+          // Notify parent component about failure
+          onVerificationComplete('failed');
           
           setTimeout(() => {
             setStatus('ready');
@@ -70,6 +79,7 @@ export default function ReclaimVerification({account}:ReclaimVerificationProps) 
       console.error('Failed to initialize verification:', error);
       setErrorMessage('Failed to initialize verification process. Please try again.');
       setStatus('error');
+      onVerificationComplete('failed');
     } finally {
       setIsLoading(false);
     }
@@ -87,18 +97,17 @@ export default function ReclaimVerification({account}:ReclaimVerificationProps) 
       const savedProofs = localStorage.getItem('reclaimProofs');
       
       if (savedStatus === 'verified' && savedProofs) {
-        setProofs(JSON.parse(savedProofs));
+        const parsedProofs = JSON.parse(savedProofs);
+        setProofs(parsedProofs);
         setStatus('success');
         setIsLoading(false);
+        // Notify parent component with cached proofs
+        onVerificationComplete('verified', parsedProofs);
       } else {
         getVerificationReq();
       }
     }
   }, []);
-
-  const redirectToSuccessPage = () => {
-    console.log('Redirecting to success page');
-  };
 
   return (
     <div className="p-6 max-w-md mx-auto bg-white rounded-xl shadow-md">
@@ -139,19 +148,12 @@ export default function ReclaimVerification({account}:ReclaimVerificationProps) 
           <h2 className="font-bold text-lg mb-2">Verification Successful!</h2>
           <p className="mb-4">Your identity has been verified successfully.</p>
           
-          <details className="mb-4">
+         {process.env.NODE_ENV === "development"  && <details className="mb-4">
             <summary className="cursor-pointer font-medium">View Proof Details</summary>
             <pre className="mt-2 p-2 bg-gray-100 rounded overflow-auto text-xs max-h-60">
               {JSON.stringify(proofs, null, 2)}
             </pre>
-          </details>
-          
-          <button 
-            onClick={redirectToSuccessPage}
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Continue
-          </button>
+          </details>}
         </div>
       )}
     </div>
