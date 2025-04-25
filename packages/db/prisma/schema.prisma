@@ -22,6 +22,8 @@ model User {
   isOnboarded  Boolean   @default(false)
   creatorType         CreatorType?  @default(Youtuber)
   socialHandle  String?   @unique
+  socialAccount String?
+  proof   Json?
   experience  ExperienceWithDigitalAssets? @default(Beginner)
   asset  AssetsCollection[]
 }
