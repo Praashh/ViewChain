@@ -1,12 +1,17 @@
 "use server"
 
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import { prisma } from "@repo/db/client"
+import { getServerSession } from "next-auth/next"
 
 export async function getAssetCollections(userid:string) {
+    const session = await getServerSession(authOptions)
+    
+    console.log("userid", session?.user.id)
     try {
         const assteCollections = await prisma.assetsCollection.findMany({
             where:{
-                userId:userid
+                userId:session?.user.id
             }
         })
         console.log("assetCollection--", assteCollections)

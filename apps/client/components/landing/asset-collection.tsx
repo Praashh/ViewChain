@@ -26,7 +26,7 @@ export default function AssetsCollection() {
   
   useEffect(() => {
     const fetchCollections = async () => {
-      
+        console.log(user?.id)
       try {
         const result = await getAssetCollections(user?.id!);
         

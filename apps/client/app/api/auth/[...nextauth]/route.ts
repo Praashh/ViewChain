@@ -15,7 +15,7 @@ declare module 'next-auth' {
   }
 }
 
-const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_ID || "",
@@ -36,6 +36,8 @@ const authOptions: NextAuthOptions = {
               data: {
                 name: profile.name.replace(" ", "").toLowerCase(),
                 email: profile.email,
+                proof: {},
+                socialAccount: ""
               },
             });
           }
