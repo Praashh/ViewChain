@@ -1,44 +1,59 @@
 "use client";
 
 import { useState, ChangeEvent, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-    WalletModalProvider,
-    WalletMultiButton
-} from '@solana/wallet-adapter-react-ui';
-import { useWallet } from '@solana/wallet-adapter-react';
+  WalletModalProvider,
+  WalletMultiButton,
+} from "@solana/wallet-adapter-react-ui";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { toast } from "sonner";
-import { ArrowRight, Upload, Wallet, WalletIcon, BadgeCheck } from "lucide-react";
+import {
+  ArrowRight,
+  Upload,
+  Wallet,
+  WalletIcon,
+  BadgeCheck,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 import { onboardUser } from "@/actions/onboardUser";
 import { useRouter } from "next/navigation";
 import ReclaimVerification from "@/components/ui/reclaim-verification";
+import { useAuth } from "@/hooks/useAuth";
 
 enum CreatorType {
   Youtuber = "Youtuber",
   Musician = "Musician",
-  other = "other"
+  other = "other",
 }
 
 enum ExperienceWithDigitalAssets {
   Beginner = "Beginner",
   Intermediate = "Intermediate",
-  Advance = "Advance"
+  Advance = "Advance",
 }
 
 enum SocialAccount {
   Youtube = "Youtube",
   Instagram = "Instagram",
-  Twitter = "Twitter"
+  Twitter = "Twitter",
 }
+
 enum VerificationStatus {
   NotStarted = "NotStarted",
   InProgress = "InProgress",
   Verified = "Verified",
-  Failed = "Failed"
+  Failed = "Failed",
 }
 
 export interface FormData {
@@ -49,12 +64,13 @@ export interface FormData {
   walletAddress?: string;
   userid?: string;
   verificationStatus: VerificationStatus;
-  socialAccount: SocialAccount
+  socialAccount: string;
+  proof: any;
 }
 
 export default function OnboardingPage() {
   const [step, setStep] = useState<number>(1);
-  const { data } = useSession();
+  const { user } = useAuth();
   const { publicKey, connected } = useWallet();
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
@@ -63,23 +79,26 @@ export default function OnboardingPage() {
     socialAccount: SocialAccount.Instagram,
     experience: ExperienceWithDigitalAssets.Beginner,
     walletConnected: false,
-    verificationStatus: VerificationStatus.NotStarted
+    verificationStatus: VerificationStatus.NotStarted,
+    proof: {},
   });
-
+  console.log(user);
   // Update form data when wallet connection changes
   useEffect(() => {
     if (connected && publicKey) {
       const walletAddress = publicKey.toString();
-      setFormData(prev => ({ 
-        ...prev, 
+      setFormData((prev) => ({
+        ...prev,
         walletConnected: true,
-        walletAddress: walletAddress
+        walletAddress: walletAddress,
       }));
       console.log("Wallet connected with address:", walletAddress);
     }
   }, [connected, publicKey]);
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -87,33 +106,33 @@ export default function OnboardingPage() {
   const connectWallet = async () => {
     try {
       console.log("Connecting to Solana wallet...");
-      
+
       // Check if wallet is connected and public key exists
       if (connected && publicKey) {
         const walletAddress = publicKey.toString();
         console.log("Wallet address:", walletAddress);
-        
-        formData.userid = data?.user.id;
-        
+
+        formData.userid = user.id;
+        console.log("form.userid", formData.userid);
         // Add wallet address to form data
-        setFormData(prev => ({ 
-          ...prev, 
+        setFormData((prev) => ({
+          ...prev,
           walletConnected: true,
-          walletAddress: walletAddress
+          walletAddress: walletAddress,
         }));
-        
+
         console.log("Form data ready for API call:", {
           ...formData,
           walletConnected: true,
-          walletAddress: walletAddress
+          walletAddress: walletAddress,
         });
-        
+
         const response = await onboardUser({
           ...formData,
-          walletAddress: walletAddress
+          walletAddress: walletAddress,
         });
-        console.log("response---", response)
-        if(response.success){
+        console.log("response---", response);
+        if (response.success) {
           toast.success("Wallet connected successfully!");
         } else {
           toast.error(`Connection Failed ${response.error || "Unknown error"}`);
@@ -126,28 +145,52 @@ export default function OnboardingPage() {
     }
   };
 
-  const handleVerification = (status: VerificationStatus) => {
-    setFormData(prev => ({
-      ...prev,
-      verificationStatus: status
-    }));
-    
-    if (status === VerificationStatus.Verified) {
+  // Handler for verification status updates from ReclaimVerification
+  const handleVerificationComplete = (
+    status: "verified" | "failed",
+    proofs?: any[]
+  ) => {
+    if (status === "verified" && proofs) {
+      setFormData((prev) => ({
+        ...prev,
+        verificationStatus: VerificationStatus.Verified,
+        proof: proofs,
+      }));
       toast.success("Identity verification successful!");
-    } else if (status === VerificationStatus.Failed) {
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        verificationStatus: VerificationStatus.Failed,
+      }));
       toast.error("Identity verification failed. Please try again.");
     }
   };
 
   const completeOnboarding = async () => {
+    const contextString = formData.proof[0].claimData.context;
+    const contextData = JSON.parse(contextString);
+
+    // Extract the username
+    const username = contextData.extractedParameters.username;
+    console.log(username)
+    console.log(formData.socialMedia)
+
+    if (username !== formData.socialMedia) {
+      toast.error(
+        "Your username isn't matching with the handle you verified with"
+      );
+      return;
+    }
     try {
-      // Final submission with all data
+      formData.userid = user.id;
       const response = await onboardUser({
-        ...formData
+        ...formData,
       });
-      
+
       if (response.success) {
-        toast.success("You have successfully completed the onboarding process!");
+        toast.success(
+          "You have successfully completed the onboarding process!"
+        );
         localStorage.setItem("isOnboarded", "true");
         router.replace("/");
       } else {
@@ -160,7 +203,11 @@ export default function OnboardingPage() {
 
   const nextStep = () => {
     if (step === 1) {
-      if (!formData.socialMedia || !formData.creatorType || !formData.experience) {
+      if (
+        !formData.socialMedia ||
+        !formData.creatorType ||
+        !formData.experience
+      ) {
         toast.error("Please fill in all required fields.");
         return;
       }
@@ -194,28 +241,30 @@ export default function OnboardingPage() {
         {/* Stepper */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
-            <StepIndicator 
-              stepNumber={1} 
-              title="Creator Profile" 
-              active={step === 1} 
-              completed={step > 1} 
-              icon={<Upload className="h-5 w-5" />} 
+            <StepIndicator
+              stepNumber={1}
+              title="Creator Profile"
+              active={step === 1}
+              completed={step > 1}
+              icon={<Upload className="h-5 w-5" />}
             />
             <StepConnector completed={step > 1} />
-            <StepIndicator 
-              stepNumber={2} 
-              title="Connect Wallet" 
-              active={step === 2} 
-              completed={step > 2} 
-              icon={<Wallet className="h-5 w-5" />} 
+            <StepIndicator
+              stepNumber={2}
+              title="Connect Wallet"
+              active={step === 2}
+              completed={step > 2}
+              icon={<Wallet className="h-5 w-5" />}
             />
             <StepConnector completed={step > 2} />
-            <StepIndicator 
-              stepNumber={3} 
-              title="Verify Identity" 
-              active={step === 3} 
-              completed={false} 
-              icon={<BadgeCheck className="h-5 w-5" />} 
+            <StepIndicator
+              stepNumber={3}
+              title="Verify Identity"
+              active={step === 3}
+              completed={
+                formData.verificationStatus === VerificationStatus.Verified
+              }
+              icon={<BadgeCheck className="h-5 w-5" />}
             />
           </div>
         </div>
@@ -228,18 +277,18 @@ export default function OnboardingPage() {
               <CardHeader>
                 <CardTitle>Creator Profile</CardTitle>
                 <CardDescription>
-                  Please provide your details to join our digital creator community.
+                  Please provide your details to join our digital creator
+                  community.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-            
                 <div className="space-y-2">
                   <Label htmlFor="creatorType">Creator Type</Label>
-                  <select 
-                    id="creatorType" 
-                    name="creatorType" 
+                  <select
+                    id="creatorType"
+                    name="creatorType"
                     className="w-full p-2 border rounded-md"
-                    value={formData.creatorType} 
+                    value={formData.creatorType}
                     onChange={handleInputChange}
                   >
                     <option value={CreatorType.Musician}>Musician</option>
@@ -249,40 +298,50 @@ export default function OnboardingPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="socialMedia">Social Media Handle</Label>
-                  <Input 
-                    id="socialMedia" 
-                    name="socialMedia" 
-                    value={formData.socialMedia} 
-                    onChange={handleInputChange} 
-                    placeholder="@yourhandle" 
+                  <Input
+                    id="socialMedia"
+                    name="socialMedia"
+                    value={formData.socialMedia}
+                    onChange={handleInputChange}
+                    placeholder="yourhandle"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="experience">Experience with Digital Assets</Label>
-                  <select 
-                    id="experience" 
-                    name="experience" 
+                  <Label htmlFor="experience">
+                    Experience with Digital Assets
+                  </Label>
+                  <select
+                    id="experience"
+                    name="experience"
                     className="w-full p-2 border rounded-md"
-                    value={formData.experience} 
+                    value={formData.experience}
                     onChange={handleInputChange}
                   >
-                    <option value={ExperienceWithDigitalAssets.Beginner}>Beginner</option>
-                    <option value={ExperienceWithDigitalAssets.Intermediate}>Intermediate</option>
-                    <option value={ExperienceWithDigitalAssets.Advance}>Advanced</option>
+                    <option value={ExperienceWithDigitalAssets.Beginner}>
+                      Beginner
+                    </option>
+                    <option value={ExperienceWithDigitalAssets.Intermediate}>
+                      Intermediate
+                    </option>
+                    <option value={ExperienceWithDigitalAssets.Advance}>
+                      Advanced
+                    </option>
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="creatorType">Social Account for Verification</Label>
-                  <select 
-                    id="verifiedAccount" 
-                    name="verifiedAccount" 
+                  <Label htmlFor="socialAccount">
+                    Social Account for Verification
+                  </Label>
+                  <select
+                    id="socialAccount"
+                    name="socialAccount"
                     className="w-full p-2 border rounded-md"
-                    value={formData.socialAccount} 
+                    value={formData.socialAccount}
                     onChange={handleInputChange}
                   >
-                    <option value={SocialAccount.Instagram}>Instagram</option>
-                    <option value={SocialAccount.Youtube}>Youtube</option>
-                    <option value={SocialAccount.Twitter}>Twitter</option>
+                    <option value={"Instagram"}>Instagram</option>
+                    <option value={"Youtube"}>Youtube</option>
+                    <option value={"Twitter"}>Twitter</option>
                   </select>
                 </div>
               </CardContent>
@@ -304,21 +363,22 @@ export default function OnboardingPage() {
                     <Wallet className="h-16 w-16 text-blue-600" />
                     <h3 className="text-lg font-medium">Connect Your Wallet</h3>
                     <p className="text-center text-gray-500">
-                      Connect your Solana wallet to access all features of our platform.
+                      Connect your Solana wallet to access all features of our
+                      platform.
                     </p>
                     {formData.walletConnected ? (
                       <div className="flex flex-col items-center space-y-2">
                         <div className="flex items-center space-x-2 text-green-600">
-                          <svg 
-                            xmlns="http://www.w3.org/2000/svg" 
-                            className="h-5 w-5" 
-                            viewBox="0 0 20 20" 
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            viewBox="0 0 20 20"
                             fill="currentColor"
                           >
-                            <path 
-                              fillRule="evenodd" 
-                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" 
-                              clipRule="evenodd" 
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                              clipRule="evenodd"
                             />
                           </svg>
                           <span>Wallet Connected Successfully</span>
@@ -335,19 +395,21 @@ export default function OnboardingPage() {
                       <div>
                         <WalletModalProvider>
                           <div className="flex justify-between gap-2">
-                            <WalletMultiButton style={{ 
-                              background: 'rgb(37 99 235)', 
-                              color: 'white',
-                              padding: '8px 16px',
-                              borderRadius: '0.375rem',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '8px'
-                            }} />
+                            <WalletMultiButton
+                              style={{
+                                background: "rgb(37 99 235)",
+                                color: "white",
+                                padding: "8px 16px",
+                                borderRadius: "0.375rem",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px",
+                              }}
+                            />
                           </div>
                         </WalletModalProvider>
-                        <Button 
-                          onClick={connectWallet} 
+                        <Button
+                          onClick={connectWallet}
                           className="bg-blue-600 hover:bg-blue-700 text-white mt-4"
                         >
                           <WalletIcon className="size-5 mr-2" />
@@ -367,27 +429,50 @@ export default function OnboardingPage() {
               <CardHeader>
                 <CardTitle>Verify Your Identity</CardTitle>
                 <CardDescription>
-                  Complete identity verification to ensure security and compliance.
+                  Complete identity verification to ensure security and
+                  compliance.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-              <ReclaimVerification account={formData.socialAccount}/>
+                {formData.verificationStatus === VerificationStatus.Verified ? (
+                  <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
+                    <h2 className="font-bold text-lg mb-2">
+                      Verification Successful!
+                    </h2>
+                    <p className="mb-4">
+                      Your identity has been verified successfully.
+                    </p>
+
+                    <details className="mb-4">
+                      <summary className="cursor-pointer font-medium">
+                        View Proof Details
+                      </summary>
+                      <pre className="mt-2 p-2 bg-gray-100 rounded overflow-auto text-xs max-h-60">
+                        {JSON.stringify(formData.proof, null, 2)}
+                      </pre>
+                    </details>
+                  </div>
+                ) : (
+                  <ReclaimVerification
+                    account={formData.socialAccount}
+                    onVerificationComplete={handleVerificationComplete}
+                  />
+                )}
               </CardContent>
             </>
           )}
 
           <CardFooter className="flex justify-between">
-            <Button 
-              variant="outline" 
-              onClick={prevStep} 
-              disabled={step === 1}
-            >
+            <Button variant="outline" onClick={prevStep} disabled={step === 1}>
               Back
             </Button>
-            <Button 
-              onClick={nextStep} 
-              disabled={(step === 2 && !formData.walletConnected) || 
-                       (step === 3 && formData.verificationStatus !== VerificationStatus.Verified)}
+            <Button
+              onClick={nextStep}
+              disabled={
+                (step === 2 && !formData.walletConnected) ||
+                (step === 3 &&
+                  formData.verificationStatus !== VerificationStatus.Verified)
+              }
               className="bg-blue-600 hover:bg-blue-700"
             >
               {step === 3 ? "Complete" : "Continue"}
@@ -409,40 +494,50 @@ interface StepIndicatorProps {
 }
 
 // Step indicator component
-function StepIndicator({ stepNumber, title, active, completed, icon }: StepIndicatorProps) {
+function StepIndicator({
+  stepNumber,
+  title,
+  active,
+  completed,
+  icon,
+}: StepIndicatorProps) {
   return (
     <div className="flex flex-col items-center">
-      <div 
+      <div
         className={`flex items-center justify-center w-10 h-10 rounded-full mb-2 ${
-          active 
-            ? "bg-blue-600 text-white" 
-            : completed 
-              ? "bg-green-500 text-white" 
+          active
+            ? "bg-blue-600 text-white"
+            : completed
+              ? "bg-green-500 text-white"
               : "bg-gray-200 text-gray-600"
         }`}
       >
         {completed ? (
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            className="h-6 w-6" 
-            fill="none" 
-            viewBox="0 0 24 24" 
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={2} 
-              d="M5 13l4 4L19 7" 
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
             />
           </svg>
         ) : (
           icon || stepNumber
         )}
       </div>
-      <span 
+      <span
         className={`text-sm font-medium ${
-          active ? "text-blue-600" : completed ? "text-green-500" : "text-gray-600"
+          active
+            ? "text-blue-600"
+            : completed
+              ? "text-green-500"
+              : "text-gray-600"
         }`}
       >
         {title}
@@ -458,17 +553,9 @@ interface StepConnectorProps {
 function StepConnector({ completed }: StepConnectorProps) {
   return (
     <div className="flex-1 mx-2">
-      <div 
-        className={`h-1 ${
-          completed ? "bg-green-500" : "bg-gray-200"
-        }`}
+      <div
+        className={`h-1 ${completed ? "bg-green-500" : "bg-gray-200"}`}
       ></div>
     </div>
   );
 }
-
-interface ReclaimVerificationProps {
-  onVerificationStatusChange: (status: VerificationStatus) => void;
-  verificationStatus: VerificationStatus;
-}
-
