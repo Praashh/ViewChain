@@ -9,6 +9,9 @@ import { toast } from 'sonner';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Play, Music } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const NFTCard = ({ nft }: { nft: any }) => {
   return (
@@ -22,13 +25,48 @@ const NFTCard = ({ nft }: { nft: any }) => {
         />
       </div>
       <div className="p-4">
-        <h3 className="text-lg font-semibold  truncate">{nft.name}</h3>
-        <Badge className="text-sm bg-blue-300 mb-2">{nft.symbol}</Badge>
+        <div className="flex justify-between items-center">
+          <div>
+            <h3 className="text-lg font-semibold truncate">{nft.name}</h3>
+            <Badge className="text-sm bg-blue-300 mb-2">{nft.symbol}</Badge>
+          </div>
+          
+          {/* Media play button next to heading */}
+          {(nft.assetType?.includes("video") || nft.assetType?.includes("audio")) && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button 
+                  className="rounded-full p-2"
+                  size="icon"
+                  variant="outline"
+                >
+                  {nft.assetType?.includes("video") ? (
+                    <Play size={16} />
+                  ) : (
+                    <Music size={16} />
+                  )}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-lg">
+                {nft.assetType?.includes("video") ? (
+                  <VideoPlayer src={nft.assetUrl} />
+                ) : (
+                  <div className="flex flex-col items-center justify-center p-4">
+                    <div className="rounded-full bg-gray-200 p-6 mb-4">
+                      <Music size={48} className="text-gray-700" />
+                    </div>
+                    <audio src={nft.assetUrl} controls autoPlay className="w-full" />
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
+          )}
+        </div>
         <div className="mt-3 flex items-center justify-between">
-          <span className="text-xs ">
+          <span className="text-xs">
             Creator: {nft.analytics.creator}
           </span>
-          <span className="text-xs ">
+          <span className="text-xs">
             Views: {nft.analytics.views}
           </span>
         </div>
@@ -58,7 +96,7 @@ const Page = () => {
   }, [id]);
 
   return (
-    <div className="flex flex-1 flex-col bg-gradient-to-r ">
+    <div className="flex flex-1 flex-col bg-gradient-to-r">
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-6 bg-gradient-to-r bg-clip-text text-transparent">
           NFT Collection
@@ -66,7 +104,7 @@ const Page = () => {
         
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 "></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2"></div>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
