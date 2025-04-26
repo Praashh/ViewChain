@@ -70,7 +70,7 @@ export async function createNft(params : TNftData, imageData: FormData, projectI
                 assetUrl: imageAsset!,
                 metadata: metadata[0],
                 symbol,
-                assetType: file.type,
+                assetType: assetFile.type,
                 collectionId,
                 analytics: {
                     views: 0,
