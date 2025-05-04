@@ -10,27 +10,20 @@ import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Play, Music, Shield, Eye } from "lucide-react";
+import { Play, Music, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAssetViews } from "@/hooks/useAssetViews";
+import { AssetProofButton } from "@/components/ui/AssetProofButton";
 
 const NFTCard = ({ nft }: { nft: any }) => {
   // Use our custom hook to track views for this asset
-  const { viewCount, isLoading, generateProof } = useAssetViews({
+  const { viewCount, isLoading } = useAssetViews({
     assetId: nft.id,
     autoTrack: true, // Automatically track a view when the card is rendered
   });
 
   // Display either the tracked view count or the initial analytics count
   const displayViewCount = isLoading ? nft.analytics.views : viewCount;
-
-  const handleGenerateProof = async () => {
-    try {
-      await generateProof();
-    } catch (error) {
-      toast.error("Failed to generate view proof");
-    }
-  };
 
   return (
     <Card className="rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
@@ -50,17 +43,6 @@ const NFTCard = ({ nft }: { nft: any }) => {
           </div>
 
           <div className="flex space-x-2">
-            {/* View count verification button */}
-            <Button
-              className="rounded-full p-2"
-              size="icon"
-              variant="outline"
-              onClick={handleGenerateProof}
-              title="Generate ZK proof of view count"
-            >
-              <Shield size={16} />
-            </Button>
-
             {/* Media play button */}
             {(nft.assetType?.includes("video") ||
               nft.assetType?.includes("audio")) && (
@@ -104,6 +86,11 @@ const NFTCard = ({ nft }: { nft: any }) => {
           <span className="text-xs flex items-center gap-1">
             <Eye size={12} /> Views: {displayViewCount}
           </span>
+        </div>
+        
+        {/* Add the proof generation button */}
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <AssetProofButton assetId={nft.id} />
         </div>
       </div>
     </Card>
