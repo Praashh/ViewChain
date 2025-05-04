@@ -2,12 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  images:{
+  images: {
     domains: ["res.cloudinary.com"],
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: '10mb',
+      bodySizeLimit: "30mb", // Increased from 10mb to handle larger file uploads
     },
   },
 };
