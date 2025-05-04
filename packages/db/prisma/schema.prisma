@@ -61,6 +61,7 @@ model AssetView {
   id        String   @id @default(uuid())
   assetId   String
   userId    String?
+  fingerprint String?
   timestamp DateTime @default(now())
   asset     Asset    @relation(fields: [assetId], references: [id])
   user      User?    @relation(fields: [userId], references: [id])

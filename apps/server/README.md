@@ -10,6 +10,8 @@ A robust Express server for verifying and generating zero-knowledge proofs of di
 - 📈 **Statistics Tracking**: Record and expose proof generation statistics
 - ⏱️ **Automated Proof Generation**: Scheduled cron jobs for generating proofs
 - 🧩 **Modular Architecture**: Clean separation of concerns for maintenance and scaling
+- 🛡️ **View Deduplication**: Prevent artificially inflating view counts through fingerprinting
+- ⚡ **Real-time Updates**: View counts update automatically without page reloads
 
 ## Project Structure
 
@@ -83,6 +85,15 @@ server/
 4. If ZK proof generation fails, it falls back to direct verification
 5. Successful proofs are saved to the database
 6. A cron job periodically checks for new views and generates proofs
+
+## View Count Protection
+
+ViewChain implements several measures to ensure accurate and honest view counts:
+
+1. **Client Fingerprinting**: Each viewer is identified by user ID (if logged in) or IP address
+2. **Cooldown Periods**: Multiple views from the same client are deduplicated within a configurable timeframe
+3. **Automatic Updates**: View counts are updated in real-time without requiring page reload
+4. **ZK Verification**: View counts are cryptographically verified to prevent tampering
 
 ## Integration with ViewChain
 
