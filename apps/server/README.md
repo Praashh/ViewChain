@@ -45,15 +45,15 @@ server/
 
 1. Install dependencies:
 
-   ```bash
-   npm install
-   ```
+    ```bash
+    npm install
+    ```
 
 2. Download the required ZK circuits:
 
-   ```bash
-   npm run download:zk-circuits
-   ```
+    ```bash
+    npm run download:zk-circuits
+    ```
 
 3. Create a `.env` file with the following variables:
 
@@ -66,9 +66,9 @@ server/
 
 4. Start the development server:
 
-   ```bash
-   npm run dev
-   ```
+    ```bash
+    npm run dev
+    ```
 
 5. For production build:
 

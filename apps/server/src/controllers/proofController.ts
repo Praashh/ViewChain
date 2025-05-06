@@ -17,6 +17,14 @@ export async function generateProof(req: Request, res: Response) {
 
     const result = await generateViewProof(assetId, viewCount);
     
+    // If proof already existed, indicate this in the response
+    if (result.message?.includes("already exists")) {
+      return res.status(200).json({
+        ...result,
+        alreadyExists: true
+      });
+    }
+    
     return res.status(200).json(result);
   } catch (error) {
     console.error("Error generating proof:", error);

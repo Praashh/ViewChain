@@ -41,45 +41,6 @@ const NFTCard = ({ nft }: { nft: any }) => {
             <h3 className="text-lg font-semibold truncate">{nft.name}</h3>
             <Badge className="text-sm bg-blue-300 mb-2">{nft.symbol}</Badge>
           </div>
-
-          <div className="flex space-x-2">
-            {/* Media play button */}
-            {(nft.assetType?.includes("video") ||
-              nft.assetType?.includes("audio")) && (
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    className="rounded-full p-2"
-                    size="icon"
-                    variant="outline"
-                  >
-                    {nft.assetType?.includes("video") ? (
-                      <Play size={16} />
-                    ) : (
-                      <Music size={16} />
-                    )}
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-lg">
-                  {nft.assetType?.includes("video") ? (
-                    <VideoPlayer src={nft.assetUrl} />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center p-4">
-                      <div className="rounded-full bg-gray-200 p-6 mb-4">
-                        <Music size={48} className="text-gray-700" />
-                      </div>
-                      <audio
-                        src={nft.assetUrl}
-                        controls
-                        autoPlay
-                        className="w-full"
-                      />
-                    </div>
-                  )}
-                </DialogContent>
-              </Dialog>
-            )}
-          </div>
         </div>
         <div className="mt-3 flex items-center justify-between">
           <span className="text-xs">Creator: {nft.analytics.creator}</span>
@@ -90,7 +51,11 @@ const NFTCard = ({ nft }: { nft: any }) => {
         
         {/* Add the proof generation button */}
         <div className="mt-4 pt-4 border-t border-gray-100">
-          <AssetProofButton assetId={nft.id} />
+          <AssetProofButton 
+            assetId={nft.id} 
+            assetType={nft.assetType}
+            assetUrl={nft.assetUrl}
+          />
         </div>
       </div>
     </Card>

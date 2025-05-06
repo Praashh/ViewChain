@@ -60,6 +60,7 @@ export async function generateViewProof(assetId: string) {
       proof: proofData.transformedProof,
       rawProof: proofData.proof,
       simpleVerification: proofData.simpleVerification,
+      alreadyExists: proofData.alreadyExists,
       viewCount,
     };
   } catch (error) {

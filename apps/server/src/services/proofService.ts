@@ -56,6 +56,30 @@ export async function generateViewProof(assetId: string, viewCount: number): Pro
     throw new Error("Missing required parameters: assetId and viewCount");
   }
 
+  // Check if a proof already exists for this asset and view count
+  try {
+    const existingProof = await prisma.viewProof.findFirst({
+      where: {
+        assetId,
+        viewCount
+      }
+    });
+
+    if (existingProof) {
+      console.log(`Proof already exists for asset ${assetId} with view count ${viewCount}`);
+      return {
+        success: true,
+        assetId,
+        viewCount,
+        proof: existingProof.proof,
+        message: "Proof already exists for this view count"
+      };
+    }
+  } catch (error) {
+    console.error(`Error checking for existing proof: ${error}`);
+    // Continue with proof generation even if check fails
+  }
+
   const client_app_url = process.env.CLIENT_APP_URL || "";
 
   if (!client_app_url) {

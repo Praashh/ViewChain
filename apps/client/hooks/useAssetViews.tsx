@@ -135,8 +135,12 @@ export function useAssetViews({
       // Refresh the view count after successful proof generation
       await fetchViewCount();
       
+      // Check if a proof already existed
+      if (result.alreadyExists) {
+        toast.info("Proof already exists for this view count");
+      }
       // If it's a simple verification (non-ZK), show different message
-      if (result.simpleVerification) {
+      else if (result.simpleVerification) {
         toast.success("View count verified successfully (development mode)");
       } else {
         toast.success("View count proof generated successfully");
