@@ -1,6 +1,6 @@
 "use server"
 import { FormData as onboardUserType } from "@/app/onboarding/page"
-import { prisma } from "@repo/db/client"
+import { prisma } from "@repo/db"
 
 export async function onboardUser(onboardUser: onboardUserType) {
     console.log("userid -", onboardUser.userid)
