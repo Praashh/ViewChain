@@ -1,1 +1,5 @@
-export { default as prisma } from './client' // exports instance of prismas
+import prisma from './client';
+
+export { prisma };
+export * from '@prisma/client';
+export default prisma;

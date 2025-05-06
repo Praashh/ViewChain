@@ -26,6 +26,7 @@ model User {
   proof   Json?
   experience  ExperienceWithDigitalAssets? @default(Beginner)
   asset  AssetsCollection[]
+  assetViews AssetView[]
 }
 
 model AssetsCollection {
@@ -52,8 +53,28 @@ model Asset {
   analytics Json
   collectionId String
   AssetsCollection AssetsCollection @relation(fields: [collectionId], references: [id])
+  assetViews AssetView[]
+  viewProofs ViewProof[]
 }
 
+model AssetView {
+  id        String   @id @default(uuid())
+  assetId   String
+  userId    String?
+  fingerprint String?
+  timestamp DateTime @default(now())
+  asset     Asset    @relation(fields: [assetId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model ViewProof {
+  id        String   @id @default(uuid())
+  assetId   String
+  viewCount Int
+  proof     Json
+  timestamp DateTime @default(now())
+  asset     Asset    @relation(fields: [assetId], references: [id])
+}
 
 enum CreatorType {
   Youtuber

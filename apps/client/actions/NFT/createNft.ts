@@ -1,7 +1,7 @@
 "use server"
 import { TNftData } from "@/components/ui/create-asset-button"
 import { uploadAssetToCloudinary } from "@/config/cloudinary";
-import { prisma } from "@repo/db/client"
+import { prisma } from "@repo/db"
 import { Underdog, uploadMediaOnIrys, uploadMetada } from '@repo/underdog';
 
 export async function createNft(params : TNftData, imageData: FormData, projectId: number, user:any, collectionId: string ){

@@ -1,10 +1,11 @@
 'use client';
 
-type VideoPlayerProps = {
+export type VideoPlayerProps = {
   src: string;
+  onPlay?: () => void;
 };
 
-const VideoPlayer = ({ src }: VideoPlayerProps) => {
+const VideoPlayer = ({ src, onPlay }: VideoPlayerProps) => {
   return (
     <div className="w-full max-w-xl mx-auto p-4">
       <video
@@ -12,6 +13,7 @@ const VideoPlayer = ({ src }: VideoPlayerProps) => {
         controls
         className="w-full rounded-xl shadow-lg"
         preload="metadata"
+        onPlay={onPlay}
       >
         Your browser does not support the video tag.
       </video>
