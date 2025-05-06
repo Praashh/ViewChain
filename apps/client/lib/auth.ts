@@ -1,6 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { prisma } from "@repo/db/client";
+import { prisma } from "@repo/db";
 
 declare module 'next-auth' {
   interface Session {

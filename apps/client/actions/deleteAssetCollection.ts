@@ -1,6 +1,6 @@
 "use server"
 
-import { prisma } from "@repo/db/client"
+import { prisma } from "@repo/db"
 
 export async function deleteAssetCollection(id:string) {
     try {

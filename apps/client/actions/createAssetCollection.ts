@@ -1,7 +1,7 @@
 "use server"
 import { TCollectionData } from "@/components/ui/create-collection-button";
 import { uploadAssetToCloudinary } from "@/config/cloudinary";
-import { prisma } from "@repo/db/client";
+import { prisma } from "@repo/db";
 import { Underdog } from '@repo/underdog';
 
 export async function createAssetCollection(collectionData: TCollectionData, imageData: FormData, userId: string) {

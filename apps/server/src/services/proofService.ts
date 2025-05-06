@@ -2,7 +2,7 @@ import { ReclaimClient } from "@reclaimprotocol/zk-fetch";
 import { Proof, transformForOnchain, verifyProof } from "@reclaimprotocol/js-sdk";
 import fetch from "node-fetch";
 import { recordProofAttempt } from "../models/ProofStats";
-import { prisma } from "@repo/db/client";
+import { prisma } from "@repo/db";
 
 /**
  * Type definition for the proof response
