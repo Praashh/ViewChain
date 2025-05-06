@@ -2,8 +2,6 @@ import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import proofRoutes from "./routes/proofRoutes";
-import { initProofStatsCron } from "./cron/proofStatsCron";
-
 
 dotenv.config();
 
@@ -43,7 +41,4 @@ const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-  
-
-  initProofStatsCron();
 });
