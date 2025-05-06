@@ -19,7 +19,7 @@ const NFTCard = ({ nft }: { nft: any }) => {
   // Use our custom hook to track views for this asset
   const { viewCount, isLoading } = useAssetViews({
     assetId: nft.id,
-    autoTrack: true, // Automatically track a view when the card is rendered
+    autoTrack: false, 
   });
 
   // Display either the tracked view count or the initial analytics count

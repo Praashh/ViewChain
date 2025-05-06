@@ -22,11 +22,11 @@ interface UseAssetViewsReturn {
 /**
  * Hook for tracking and displaying asset views
  * @param assetId ID of the asset to track views for
- * @param autoTrack Whether to automatically track views on mount (default: true)
+ * @param autoTrack Whether to automatically track views on mount (default: false)
  */
 export function useAssetViews({
   assetId,
-  autoTrack = true,
+  autoTrack = false, 
 }: UseAssetViewsProps): UseAssetViewsReturn {
   const [viewCount, setViewCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -159,15 +159,16 @@ export function useAssetViews({
     }
   };
 
-  // Auto-track views on mount if enabled
+  // Only fetch view count and proofs on mount, don't track automatically
   useEffect(() => {
     fetchViewCount();
     fetchProofs();
 
+    // Only track a view if explicitly requested
     if (autoTrack) {
       trackView();
     }
-  }, [assetId, autoTrack]);
+  }, [assetId]);
 
   return {
     viewCount,
