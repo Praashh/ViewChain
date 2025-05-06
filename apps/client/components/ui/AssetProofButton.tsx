@@ -31,6 +31,12 @@ export function AssetProofButton({ assetId, assetType, assetUrl }: AssetProofBut
   }, [viewCount]);
 
   const handleGenerateProof = async () => {
+
+    if (!viewTracked) {
+      await trackView();
+      setViewTracked(true);
+    }
+    
     const result = await generateProof();
     if (result?.success) {
       setIsExpanded(true);
@@ -62,7 +68,6 @@ export function AssetProofButton({ assetId, assetType, assetUrl }: AssetProofBut
             <DialogTrigger asChild>
               <Button
                 variant="default"
-                onClick={handlePlayMedia}
                 className="flex items-center space-x-2"
               >
                 {assetType?.includes("video") ? (
