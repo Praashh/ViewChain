@@ -1,23 +1,19 @@
 "use server";
 
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@repo/db/client";
+import { prisma } from "@repo/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 // Define time limits for repeated views
 const VIEW_COOLDOWN_PERIOD_MS = 1 * 60 * 60 * 1000; // 1 hour in milliseconds
 
-/**
- * GET endpoint to retrieve the current view count for an asset
- */
 export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Await the params to satisfy Next.js requirement
-    const { id } = await Promise.resolve(params);
+    const { id } = await params;
     const assetId = id;
 
     // Fetch the asset and its current view count
@@ -62,20 +58,16 @@ async function getClientFingerprint(req: NextRequest): Promise<string> {
   return `ip_${ip}`;
 }
 
-/**
- * POST endpoint to increment and record a view for an asset
- * Implements view deduplication and rate limiting
- */
 export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await Promise.resolve(params);
+    const { id } = await params;
     const assetId = id;
     
     // Get user ID or IP for identification
-    const clientFingerprint = await getClientFingerprint(req);
+    const clientFingerprint = await getClientFingerprint(request);
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
 

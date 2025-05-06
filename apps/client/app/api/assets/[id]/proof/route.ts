@@ -1,7 +1,7 @@
 "use server";
 
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@repo/db/client";
+import { prisma } from "@repo/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
@@ -9,11 +9,11 @@ import { authOptions } from "@/lib/auth";
  * GET endpoint to retrieve proofs for an asset
  */
 export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await Promise.resolve(params);
+    const { id } = await params;
     const assetId = id;
 
     // Fetch the asset and validate it exists
@@ -24,7 +24,6 @@ export async function GET(
     if (!asset) {
       return NextResponse.json({ error: "Asset not found" }, { status: 404 });
     }
-
 
     const proofs = await prisma.viewProof.findMany({
       where: { assetId },
@@ -49,11 +48,11 @@ export async function GET(
  * POST endpoint to save a new proof for an asset
  */
 export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await Promise.resolve(params);
+    const { id } = await params;
     const assetId = id;
     
     const session = await getServerSession(authOptions);
@@ -67,7 +66,7 @@ export async function POST(
     }
     
     // Get the request body
-    const body = await req.json();
+    const body = await request.json();
     const { viewCount, proof } = body;
     
     if (!viewCount || !proof) {
