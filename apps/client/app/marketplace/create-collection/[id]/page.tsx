@@ -10,10 +10,11 @@ import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Play, Music, Eye } from "lucide-react";
+import { Play, Music, Eye, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAssetViews } from "@/hooks/useAssetViews";
 import { AssetProofButton } from "@/components/ui/AssetProofButton";
+import { useSession } from "next-auth/react";
 
 const NFTCard = ({ nft }: { nft: any }) => {
   // Use our custom hook to track views for this asset
@@ -66,7 +67,9 @@ const Page = () => {
   const path = usePathname();
   const [nfts, setNfts] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [collectionData, setCollectionData] = useState<any>(null);
   const id = path.split("/").pop();
+  const { data: session } = useSession();
 
   useEffect(() => {
     (async () => {
@@ -78,16 +81,39 @@ const Page = () => {
       }
 
       setNfts(result.Nfts);
+      setCollectionData(result.collection);
       setLoading(false);
     })();
   }, [id]);
 
+  const handleShare = () => {
+    // Try to get the creator's handle from the collection data
+    const creatorHandle = collectionData?.userId === session?.user?.id ? session?.user?.socialHandle : collectionData?.creatorHandle;
+    
+    if (creatorHandle) {
+      const shareUrl = `${window.location.origin}/share/${creatorHandle}/${id}`;
+      navigator.clipboard.writeText(shareUrl);
+      toast.success("Share link copied to clipboard!");
+    } else {
+      // Fallback to a generic share URL if no handle is available
+      const shareUrl = `${window.location.origin}/share/collection/${id}`;
+      navigator.clipboard.writeText(shareUrl);
+      toast.success("Share link copied to clipboard!");
+    }
+  };
+
   return (
     <div className="flex flex-1 flex-col bg-gradient-to-r">
       <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-6 bg-gradient-to-r bg-clip-text text-transparent">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold bg-gradient-to-r bg-clip-text text-transparent">
           NFT Collection
         </h1>
+          <Button onClick={handleShare} variant="outline" className="gap-2">
+            <Share2 size={16} />
+            Share Collection
+          </Button>
+        </div>
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
