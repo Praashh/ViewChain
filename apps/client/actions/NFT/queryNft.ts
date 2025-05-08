@@ -4,11 +4,18 @@ import { prisma } from "@repo/db"
 
 export async function queryNft(id:string){
     try {
-        const nftAssets = await prisma.asset.findMany({
+        const [nftAssets, collection] = await Promise.all([
+            prisma.asset.findMany({
             where:{
                 collectionId: id,
             }
-        });
+            }),
+            prisma.assetsCollection.findUnique({
+                where: {
+                    id: id
+                }
+            })
+        ]);
 
         if(!nftAssets){
             return {
@@ -20,7 +27,8 @@ export async function queryNft(id:string){
         return {
             success: true,
             message: "Nft Found",
-            Nfts: nftAssets
+            Nfts: nftAssets,
+            collection
         }
     } catch (error) {
         return {
