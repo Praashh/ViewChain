@@ -14,7 +14,10 @@ export default function CollectionsPage() {
     const fetchData = async () => {
       try {
         const result = await getAllCollections()
-        setData(result.collections || [])
+        setData(result.collections?.map(collection => ({
+          ...collection,
+          creatorHandle: null // Add missing creatorHandle property
+        })) || [])
       } catch (error) {
         console.error("Failed to fetch collections:", error)
       } finally {
