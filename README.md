@@ -1,84 +1,173 @@
-# Turborepo starter
+# ViewChain
 
-This Turborepo starter is maintained by the Turborepo core team.
+A decentralized platform for content creators to verify, track, and monetize their digital content with blockchain-powered view verification.
 
-## Using this example
+## 🚀 Problem Statement
 
-Run the following command:
+Content creators face significant challenges in today's digital landscape:
 
-```sh
-npx create-turbo@latest
+- Lack of verifiable proof for content viewership metrics
+- Difficulty monetizing content beyond traditional platforms
+- Limited ownership and control over their digital assets
+- Insufficient transparency in audience engagement analytics
+- Vulnerability to fraud and view manipulation
+
+## 💡 Solution
+
+ViewChain provides a comprehensive solution by combining blockchain technology with zero-knowledge proofs:
+
+- **Verifiable Viewership**: Zero-knowledge proof verification for authentic content views
+- **Digital Asset Ownership**: Creator-owned digital content with blockchain provenance
+- **Transparent Analytics**: Immutable viewership data for creators and audiences
+- **Web3 Integration**: Direct blockchain engagement for creators and fans
+
+## 🏗️ Architecture
+
+ViewChain is built on a modern, scalable architecture using Turborepo for monorepo management:
+
+### Client Application (Next.js)
+- React-based frontend with App Router
+- Web3 wallet integration (Solana)
+- Interactive UI with drag-and-drop capabilities
+- Responsive design with Tailwind CSS
+
+### Server Application (Node.js/Express)
+- RESTful API endpoints
+- Zero-knowledge proof generation and verification
+- CORS-enabled for cross-origin requests
+
+### Database (PostgreSQL/Prisma)
+- Relational data model for users, assets, and views
+- Comprehensive schema for digital asset management
+- View tracking with fingerprinting
+- Proof storage and verification
+
+### Blockchain Integration
+- Solana wallet adapter
+- Underdog NFT integration
+- Web3.js for blockchain interactions
+- Secure wallet connection
+
+## 📁 Project Structure
+
+```
+ViewChain/
+├── apps/
+│   ├── client/                  # Next.js frontend application
+│   │   ├── app/                # Next.js App Router
+│   │   ├── components/         # UI components
+│   │   ├── actions/            # Server actions
+│   │   └── hooks/              # React hooks
+│   └── server/                  # Express backend application
+│       ├── src/                # Server source code
+│       ├── controllers/        # Request handlers
+│       ├── routes/             # API routes
+│       └── services/           # Business logic
+├── packages/
+│   ├── db/                      # Shared database package
+│   │   ├── prisma/             # Prisma ORM schema and migrations
+│   │   └── src/                # Database client
+│   ├── ui/                      # Shared UI components
+│   ├── eslint-config/           # Shared ESLint configurations
+│   └── typescript-config/       # Shared TypeScript configurations
+└── turbo.json                   # Turborepo configuration
 ```
 
-## What's inside?
+## 🔧 Technologies
 
-This Turborepo includes the following packages/apps:
+### Frontend
+- Next.js 15.3.0
+- React 19
+- TypeScript
+- Tailwind CSS
+- Radix UI
+- Framer Motion
+- DND Kit
 
-### Apps and Packages
+### Backend
+- Node.js
+- Express
+- TypeScript
+- Reclaim Protocol
+- Zero-knowledge proofs
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### Database
+- PostgreSQL
+- Prisma ORM
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+### Web3
+- Solana Web3.js
+- Wallet adapters
+- Underdog NFT platform
 
-### Utilities
+### DevOps
+- Turborepo
+- pnpm package manager
+- ESLint
+- TypeScript
 
-This Turborepo has some additional tools already setup for you:
+## ✨ Key Features
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+### For Content Creators
+- Create and manage digital asset collections
+- Track verified viewership with zero-knowledge proofs
+- Generate analytics dashboards for content performance
+- Monetize content through blockchain technologies
 
-### Build
+### For Audiences
+- Verifiably authenticate content views
+- Engage with creators through blockchain technology
+- Access exclusive creator content
 
-To build all apps and packages, run the following command:
+### Technical Features
+- Zero-knowledge proof verification
+- Blockchain asset management
+- Fingerprinted view tracking
+- Cross-platform compatibility
 
-```
-cd my-turborepo
-pnpm build
-```
+## 🛠️ Development Workflow
 
-### Develop
+ViewChain uses Turborepo to manage the development workflow:
 
-To develop all apps and packages, run the following command:
+```bash
+# Install dependencies
+pnpm install
 
-```
-cd my-turborepo
+# Run development server
 pnpm dev
+
+# Build for production
+pnpm build
+
+# Database operations
+pnpm db:generate  # Generate Prisma client
+pnpm db:migrate   # Run database migrations
+pnpm db:deploy    # Deploy migrations to production
 ```
 
-### Remote Caching
+## 🔐 Security Features
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+- Zero-knowledge proof verification
+- Secure wallet connections
+- Environment variable protection
+- CORS security
+- User fingerprinting
 
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+## 🌐 Use Cases
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+- **Content Creators**: Verify audience engagement, monetize content directly
+- **Media Companies**: Track content performance with verifiable metrics
+- **Marketers**: Access authentic engagement analytics
+- **Audiences**: Support creators directly, access exclusive content
 
-```
-cd my-turborepo
-npx turbo login
-```
+## 🚀 Future Roadmap
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+- Enhanced analytics dashboards
+- Additional blockchain integrations
+- Mobile application
+- Creator marketplace expansion
+- API for third-party integrations
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+## 📄 License
 
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turbo.build/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/docs/reference/command-line-reference)
+ViewChain is licensed under the Apache 2.0 License.
