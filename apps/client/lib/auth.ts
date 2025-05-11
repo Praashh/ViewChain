@@ -65,41 +65,6 @@ export const authOptions: NextAuthOptions = {
 
       return session;
     },
-    async redirect({ url, baseUrl }) {
-      // If it's a sign-in callback, fetch user data to determine redirection
-      if (url.startsWith(baseUrl + "/api/auth/callback")) {
-        // Get user email from the URL query parameters
-        const urlParams = new URL(url).searchParams;
-        const callbackUrl = urlParams.get("callbackUrl");
-        
-        // Check if redirection is already set in the callback URL
-        if (callbackUrl && (callbackUrl.includes("/marketplace") || callbackUrl.includes("/onboarding"))) {
-          return callbackUrl;
-        }
-        
-        // Get the user's email from the session
-        const sessionEmail = urlParams.get("email");
-        
-        if (sessionEmail) {
-          try {
-            const user = await prisma.user.findUnique({
-              where: { email: sessionEmail },
-            });
-            
-            if (user && user.isOnboarded) {
-              return `${baseUrl}/marketplace`;
-            } else {
-              return `${baseUrl}/onboarding`;
-            }
-          } catch (error) {
-            console.error("Error fetching user data for redirection:", error);
-          }
-        }
-      }
-      
-      // Default fallback to the callback URL or home page
-      return url.startsWith(baseUrl) ? url : baseUrl;
-    }
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

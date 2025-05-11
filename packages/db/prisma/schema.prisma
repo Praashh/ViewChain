@@ -37,7 +37,7 @@ model AssetsCollection {
   userId  String
   collectionImageUrl  String?
   underdogProjectId Int @default(0)
-  user User  @relation(fields: [userId], references: [id])
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   asset Asset []
 }
 
@@ -52,7 +52,7 @@ model Asset {
   metadata String 
   analytics Json
   collectionId String
-  AssetsCollection AssetsCollection @relation(fields: [collectionId], references: [id])
+  AssetsCollection AssetsCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
   assetViews AssetView[]
   viewProofs ViewProof[]
 }
@@ -63,8 +63,8 @@ model AssetView {
   userId    String?
   fingerprint String?
   timestamp DateTime @default(now())
-  asset     Asset    @relation(fields: [assetId], references: [id])
-  user      User?    @relation(fields: [userId], references: [id])
+  asset     Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ViewProof {
@@ -73,7 +73,7 @@ model ViewProof {
   viewCount Int
   proof     Json
   timestamp DateTime @default(now())
-  asset     Asset    @relation(fields: [assetId], references: [id])
+  asset     Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
 }
 
 enum CreatorType {
