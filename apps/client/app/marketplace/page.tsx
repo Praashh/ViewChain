@@ -5,11 +5,14 @@ import { useEffect, useState } from "react"
 import { getAllCollections } from "@/actions/getAllCollections"
 import { Skeleton } from "@/components/ui/skeleton"
 import z from 'zod'
+import useCheckUserBoarded from "@/hooks/useCheckUserBoarded"
+import { redirect, useRouter } from "next/navigation"
 
 export default function CollectionsPage() {
   const [data, setData] = useState<z.infer<typeof schema>[]>([])
   const [loading, setLoading] = useState(true)
-
+  const {isUserOnBoarded} = useCheckUserBoarded();
+  const router = useRouter();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -27,6 +30,10 @@ export default function CollectionsPage() {
 
     fetchData()
   }, [])
+
+  if(!isUserOnBoarded){
+      router.replace("/onboarding")
+  }
 
   if (loading) {
     return (

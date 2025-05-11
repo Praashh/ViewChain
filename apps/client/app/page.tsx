@@ -3,11 +3,11 @@ import Hero from '@/components/landing/hero';
 import HowItWorks from '@/components/landing/HowItWorks';
 import Footer from '@/components/ui/footer';
 import Navbar from '@/components/ui/main-nav';
-import VideoPlayer from '@/components/ui/video-player';
+import useGetWalletKey from '@/hooks/useGetWalletKey';
 
 
 export default function Page() {
-   
+  useGetWalletKey();   
     return (
         <section className="relative min-h-screen overflow-hidden py-8">
         <div className="absolute -top-[10rem] left-[50%] size-[12rem] translate-x-[-50%] rounded-full bg-gradient-to-t from-blue-400 to-blue-700 blur-[8em] md:-top-[35rem] md:size-[40rem] md:opacity-55"></div>

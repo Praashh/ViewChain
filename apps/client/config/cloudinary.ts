@@ -1,6 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
 
-console.log("Keys", process.env.CLOUDINARY_CLOUD_NAME, process.env.CLOUDINARY_API_KEY, process.env.NEXT_PUBLIC_CLOUDINARY_API_SECREY)
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
