@@ -5,6 +5,7 @@ const config: NextConfig = {
   env: {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
     SERVER_URL: process.env.SERVER_URL || "http://localhost:3001",
+    WALLET: process.env.WALLET,
   },
   // This is required for Solana wallets to work
   webpack: (config) => {

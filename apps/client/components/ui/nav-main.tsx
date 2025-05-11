@@ -10,7 +10,6 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
-import { it } from "node:test"
 import CreateCollectionButton from "./create-collection-button"
 
 export function NavMain({
