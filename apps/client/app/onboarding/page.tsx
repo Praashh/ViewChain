@@ -30,6 +30,8 @@ import { onboardUser } from "@/actions/onboardUser";
 import { useRouter } from "next/navigation";
 import ReclaimVerification from "@/components/ui/reclaim-verification";
 import { useAuth } from "@/hooks/useAuth";
+import { sendEmailNotification } from "@/actions/sendMail";
+import useGetWalletKey from "@/hooks/useGetWalletKey"
 
 enum CreatorType {
   Youtuber = "Youtuber",
@@ -82,6 +84,8 @@ export default function OnboardingPage() {
     verificationStatus: VerificationStatus.NotStarted,
     proof: {},
   });
+  useGetWalletKey();   
+
   console.log(user);
   // Update form data when wallet connection changes
   useEffect(() => {
@@ -186,7 +190,7 @@ export default function OnboardingPage() {
       const response = await onboardUser({
         ...formData,
       });
-
+      await sendEmailNotification(user.email)
       if (response.success) {
         toast.success(
           "You have successfully completed the onboarding process!"

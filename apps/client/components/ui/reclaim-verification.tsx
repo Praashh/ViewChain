@@ -58,7 +58,7 @@ export default function ReclaimVerification({ account, onVerificationComplete }:
           
           if (typeof window !== 'undefined') {
             localStorage.setItem('reclaimVerificationStatus', 'verified');
-            localStorage.setItem('reclaimProofs', JSON.stringify(proofs));
+            localStorage.setItem('reclaimProofs-viewchain', JSON.stringify(proofs));
           }
         },
         onError: (error: Error) => {
@@ -94,7 +94,7 @@ export default function ReclaimVerification({ account, onVerificationComplete }:
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedStatus = localStorage.getItem('reclaimVerificationStatus');
-      const savedProofs = localStorage.getItem('reclaimProofs');
+      const savedProofs = localStorage.getItem('reclaimProofs-viewchiain');
       
       if (savedStatus === 'verified' && savedProofs) {
         const parsedProofs = JSON.parse(savedProofs);
