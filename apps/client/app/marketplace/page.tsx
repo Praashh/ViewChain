@@ -7,12 +7,13 @@ import { Skeleton } from "@/components/ui/skeleton"
 import z from 'zod'
 import useCheckUserBoarded from "@/hooks/useCheckUserBoarded"
 import { redirect, useRouter } from "next/navigation"
+import AskToOnboardingDialog from "@/components/ui/ask-to-onboarding"
+import useOnboarding from "@/hooks/useOnboarding"
 
 export default function CollectionsPage() {
   const [data, setData] = useState<z.infer<typeof schema>[]>([])
   const [loading, setLoading] = useState(true)
-  const {isUserOnBoarded} = useCheckUserBoarded();
-  const router = useRouter();
+  const isUserOnBoarded = useOnboarding();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -31,10 +32,12 @@ export default function CollectionsPage() {
     fetchData()
   }, [])
 
-  if(!isUserOnBoarded){
-      router.replace("/onboarding")
-  }
+  console.log(isUserOnBoarded.isOnboarded);
+  
 
+  if(!isUserOnBoarded){
+    return <AskToOnboardingDialog/>
+  }
   if (loading) {
     return (
       <div className="p-4 space-y-4">
