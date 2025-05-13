@@ -20,8 +20,6 @@ export async function getWalletPrivateKey(AssetId: string){
   
       // Parse the JSON content
       const jsonContent = await walletJSON.json();
-  
-      console.log("Wallet content:", jsonContent);
 
       try {
         const filePath = await findUp('services/underdog/wallet.json', {
@@ -37,7 +35,6 @@ export async function getWalletPrivateKey(AssetId: string){
           await fs.promises.writeFile(filePath, JSON.stringify(jsonContent), 'utf8');
           console.log("Wrote content, it was empty");
         }
-        console.log("Local wallet file content:", jsonContent);
         return {
             success: true
         }
