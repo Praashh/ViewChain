@@ -159,9 +159,9 @@ export function ChartAreaInteractive() {
     startDate.setDate(startDate.getDate() - daysToSubtract)
     return date >= startDate
   })
-
+  // make the whole compoenent blue and add coming soon text
   return (
-    <Card className="@container/card">
+    <Card className="@container/card blur-md -z-10">
       <CardHeader className="relative">
         <CardTitle>Total Visitors</CardTitle>
         <CardDescription>
