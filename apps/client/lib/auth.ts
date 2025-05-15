@@ -3,7 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@repo/db";
 
-declare module 'next-auth' {
+declare module "next-auth" {
   interface Session {
     user: {
       id: string;
@@ -12,7 +12,7 @@ declare module 'next-auth' {
       isOnboarded?: boolean;
       publicKey?: string;
       socialHandle?: string;
-    }
+    };
   }
 }
 
@@ -63,7 +63,7 @@ export const authOptions: NextAuthOptions = {
                 name: profile.name.replace(" ", "").toLowerCase(),
                 email: profile.email,
                 proof: {},
-                socialAccount: ""
+                socialAccount: "",
               },
             });
           }

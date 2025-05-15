@@ -1,14 +1,10 @@
-'use client';
+"use client";
 
-import {
-  ChartNetwork,
-  FolderIcon,
-  UserPlus,
-  VideoIcon,
-} from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useInView } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { ChartNetwork, FolderIcon, UserPlus, VideoIcon } from "lucide-react";
+import { motion } from "framer-motion";
+import { useInView } from "framer-motion";
+import { useRef, useState } from "react";
+import { steps } from "@/constants/data";
 
 const TimelineCard = ({ step, index, inView }: any) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -18,7 +14,7 @@ const TimelineCard = ({ step, index, inView }: any) => {
       initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50, y: 0 }}
       animate={inView ? { opacity: 1, x: 0, y: 0 } : {}}
       transition={{ duration: 0.5, delay: index * 0.2 }}
-      className={`relative flex items-center ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} flex-row`}
+      className={`relative flex items-center ${index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"} flex-row`}
     >
       {/* Timeline dot with ping animation */}
       <div className="absolute left-4 z-10 -translate-x-1/2 transform md:left-1/2">
@@ -30,8 +26,8 @@ const TimelineCard = ({ step, index, inView }: any) => {
       <div
         className={`ml-12 md:ml-0 ${
           index % 2 === 0
-            ? 'md:mr-auto md:w-[calc(50%-2rem)] md:pr-16'
-            : 'md:ml-auto md:w-[calc(50%-2rem)] md:pl-16'
+            ? "md:mr-auto md:w-[calc(50%-2rem)] md:pr-16"
+            : "md:ml-auto md:w-[calc(50%-2rem)] md:pl-16"
         } w-[calc(100%-3rem)]`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -79,33 +75,7 @@ const TimelineCard = ({ step, index, inView }: any) => {
 
 const HowItWorks = () => {
   const containerRef = useRef(null);
-  const isInView = useInView(containerRef, { once: true, margin: '-100px' });
-  const steps = [
-    {
-      icon: <UserPlus className="h-8 w-8 text-blue-500" />,
-      title: 'Signup and finish onboarding',
-      description:
-        'Create an account to get started and access your personalized dashboard.',
-    },
-    {
-      icon: <VideoIcon className="h-8 w-8 text-blue-500" />,
-      title: 'Upload Asset',
-      description:
-        'Upload your asstes(images/videos) to get the decentralized engegment count.',
-    },
-    {
-      icon: <FolderIcon className="h-8 w-8 text-blue-500" />,
-      title: 'Create a Collection for your digital assets',
-      description:
-        'Create a Collection for your digital assets.',
-    },
-    {
-      icon: <ChartNetwork className="h-8 w-8 text-blue-500" />,
-      title: 'Get Personalized Analytics',
-      description:
-        'View or get detailed analytics of your asstes',
-    },
-  ];
+  const isInView = useInView(containerRef, { once: true, margin: "-100px" });
 
   return (
     <section className="px-2 py-16 md:py-24" ref={containerRef}>

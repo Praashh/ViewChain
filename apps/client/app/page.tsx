@@ -1,30 +1,28 @@
-"use client"
-import Hero from '@/components/landing/hero';
-import HowItWorks from '@/components/landing/HowItWorks';
-import Footer from '@/components/ui/footer';
-import Navbar from '@/components/ui/main-nav';
-import useGetWalletKey from '@/hooks/useGetWalletKey';
-
+"use client";
+import { Hero } from "@/components/landing/main/hero";
+import useGetWalletKey from "@/hooks/useGetWalletKey";
+import Navbar from "@/components/ui/main-nav";
+import { Features } from "@/components/landing/main/features";
+import { Working } from "@/components/landing/main/working";
+import { Faq } from "@/components/landing/main/faq";
+import { Footer } from "@/components/landing/main/footer";
+import { CTA } from "@/components/landing/main/cta";
+import Testimonials from "@/components/landing/main/testimonial";
 
 export default function Page() {
-  useGetWalletKey();   
-    return (
-        <section className="relative min-h-screen overflow-hidden py-8">
-        <div className="absolute -top-[10rem] left-[50%] size-[12rem] translate-x-[-50%] rounded-full bg-gradient-to-t from-blue-400 to-blue-700 blur-[8em] md:-top-[35rem] md:size-[40rem] md:opacity-55"></div>
-        <div className="absolute -bottom-[2rem] left-[50%] -z-0 size-[12rem] translate-x-[-50%] rounded-full border-2 border-white bg-gradient-to-t from-blue-400 to-blue-700 opacity-75 blur-[8em] md:-bottom-[6rem] md:size-[14rem]"></div>
-        <div className="fixed left-[50%] top-4 z-[999] w-full max-w-7xl translate-x-[-50%] rounded-xl bg-foreground/5 backdrop-blur-md dark:bg-white/10">
+  useGetWalletKey();
+  return (
+    <div className="max-w-7xl mx-auto">
+      <div className="px-4 ">
         <Navbar />
-      </div>
-      <div className="mx-auto mt-28 max-w-[1180px] px-4">
         <Hero />
-        <HowItWorks />
+        <Features />
+        <Working />
+        <Testimonials />
+        <Faq />
+        <CTA />
         <Footer />
       </div>
-
-
-      {/* <VideoPlayer src="https://devnet.irys.xyz/BKv4p7gVmo9PX6hh5hd2kDX32UYVRWhHMBvS9yZK32jE" /> */}
-
-
-      </section>
-    );
+    </div>
+  );
 }
