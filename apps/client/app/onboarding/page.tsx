@@ -190,7 +190,9 @@ export default function OnboardingPage() {
       const response = await onboardUser({
         ...formData,
       });
-      await sendEmailNotification(user.email)
+      const emailResponse = await sendEmailNotification(user.email)
+      console.log("emailResponse", emailResponse)
+      console.log(emailResponse)
       if (response.success) {
         toast.success(
           "You have successfully completed the onboarding process!"
