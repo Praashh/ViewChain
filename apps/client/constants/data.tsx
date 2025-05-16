@@ -1,5 +1,4 @@
 import {
-  Activity,
   ShieldCheck,
   Eye,
   ChartBar,
@@ -10,6 +9,7 @@ import {
   Network,
 } from "@phosphor-icons/react";
 import { work1 } from "./image";
+import { Activity } from "lucide-react";
 
 export const features = [
   {
