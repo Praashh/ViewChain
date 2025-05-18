@@ -73,7 +73,7 @@ export default function Testimonials() {
       <div className="w-full max-w-6xl mt-20 px-4">
         <div className="relative">
           <div
-            className="flex transition-transform duration-500 ease-in-out"
+            className="flex transition-transform overflow-clip duration-500 ease-in-out"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
             {testimonials.map((testimonial, index) => (
