@@ -6,6 +6,7 @@ import useCheckUserBoarded from "@/hooks/useCheckUserBoarded";
 import { Logo } from "../svgs/logo";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 
 const Navbar = () => {
   const { data: session } = useSession();
@@ -44,13 +45,12 @@ const Navbar = () => {
         <div className="flex items-center gap-2">
           <Button variant={"secondary"}>Contact</Button>
           {session ? (
-            <Button
-              className="inline-flex"
-              variant="destructive"
-              onClick={() => signOut()}
-            >
-              Logout
-            </Button>
+            <Avatar className="bg-primary">
+              <AvatarImage src={session.user?.name?.charAt(0)} />
+              <AvatarFallback className="bg-primary">
+                {session.user?.name?.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
           ) : (
             <Button
               className=""

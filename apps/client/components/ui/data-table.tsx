@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -14,13 +14,13 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
-import { ChevronDownIcon, MoreVerticalIcon, Share2 } from "lucide-react"
-import { z } from "zod"
-import { useSession } from "next-auth/react"
-import { toast } from "sonner"
+} from "@tanstack/react-table";
+import { ChevronDownIcon, MoreVerticalIcon, Share2 } from "lucide-react";
+import { z } from "zod";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -28,7 +28,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -36,9 +36,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Badge } from "./badge"
-import Link from "next/link"
+} from "@/components/ui/table";
+import { Badge } from "./badge";
+import Link from "next/link";
+import CreateCollectionButton from "./create-collection-button";
+import { Layout } from "@phosphor-icons/react";
+import { Skeleton } from "./skeleton";
 
 // Define the schema for your data
 export const schema = z.object({
@@ -50,7 +53,7 @@ export const schema = z.object({
   collectionImageUrl: z.string().nullable(),
   underdogProjectId: z.number(),
   creatorHandle: z.string().nullable(),
-})
+});
 
 // Define the columns for your table
 const columns: ColumnDef<z.infer<typeof schema>>[] = [
@@ -58,7 +61,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     accessorKey: "name",
     header: "Name",
     cell: ({ row }) => {
-      return <div className="font-medium">{row.original.name}</div>
+      return <div className="font-medium">{row.original.name}</div>;
     },
   },
   {
@@ -69,21 +72,28 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
         <div className="line-clamp-2 max-w-[300px] text-muted-foreground">
           {row.original.description}
         </div>
-      )
+      );
     },
   },
   {
     accessorKey: "category",
     header: "Category",
     cell: ({ row }) => {
-      return <Badge>{row.original.category || '-'}</Badge>
+      return <Badge>{row.original.category || "-"}</Badge>;
     },
   },
   {
     accessorKey: "viewCollections",
     header: "View Collections",
     cell: ({ row }) => {
-      return <Link href={`/marketplace/create-collection/${row.original.id}?projectId=${row.original.underdogProjectId}`} className="text-[#71a0d9] text-center">View</Link>
+      return (
+        <Link
+          href={`/marketplace/create-collection/${row.original.id}?projectId=${row.original.underdogProjectId}`}
+          className="text-[#71a0d9] text-center"
+        >
+          View
+        </Link>
+      );
     },
   },
   {
@@ -91,11 +101,12 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     header: "Share",
     cell: ({ row }) => {
       const { data: session } = useSession();
-      
+
       const handleShare = () => {
         // Try to get the creator's handle from the collection data
-        const creatorHandle = row.original.creatorHandle || session?.user?.socialHandle;
-        
+        const creatorHandle =
+          row.original.creatorHandle || session?.user?.socialHandle;
+
         if (creatorHandle) {
           const shareUrl = `${window.location.origin}/share/${creatorHandle}/${row.original.id}`;
           navigator.clipboard.writeText(shareUrl);
@@ -109,9 +120,9 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
       };
 
       return (
-        <Button 
-          onClick={handleShare} 
-          variant="ghost" 
+        <Button
+          onClick={handleShare}
+          variant="ghost"
           size="sm"
           className="gap-2"
         >
@@ -121,14 +132,22 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
       );
     },
   },
-]
+];
 
-export function DataTable({ data }: { data: z.infer<typeof schema>[] }) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+export function DataTable({
+  data,
+  loading,
+}: {
+  data: z.infer<typeof schema>[];
+  loading: boolean;
+}) {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
     data,
@@ -150,91 +169,110 @@ export function DataTable({ data }: { data: z.infer<typeof schema>[] }) {
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-  })
+  });
 
   return (
-    <div className="w-full space-y-4 p-4">
+    <div className="w-full p-4">
       {/* Table Controls */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center mb-6 justify-between">
         {/* Column Visibility Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="text-2xl flex-1 font-medium flex items-center gap-2">
+          Marketplace
+        </div>
+        <div className="flex items-center gap-2`">
+          <CreateCollectionButton />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* The Table */}
       <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+        {loading ? (
+          <>
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          </>
+        ) : (
+          <Table>
+            <TableHeader className="bg-accent/60 mb-4 rounded-t-xl">
+              {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  className="hover:bg-background/80"
+                  key={headerGroup.id}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        )}
       </div>
 
       {/* Pagination Controls */}
@@ -265,5 +303,5 @@ export function DataTable({ data }: { data: z.infer<typeof schema>[] }) {
         </div>
       </div>
     </div>
-  )
+  );
 }

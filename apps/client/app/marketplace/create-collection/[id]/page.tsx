@@ -15,19 +15,22 @@ import { Button } from "@/components/ui/button";
 import { useAssetViews } from "@/hooks/useAssetViews";
 import { AssetProofButton } from "@/components/ui/AssetProofButton";
 import { useSession } from "next-auth/react";
+import { User } from "@phosphor-icons/react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { CardSkeleton } from "@/components/ui/card-skeleton";
 
 const NFTCard = ({ nft }: { nft: any }) => {
   // Use our custom hook to track views for this asset
   const { viewCount, isLoading } = useAssetViews({
     assetId: nft.id,
-    autoTrack: false, 
+    autoTrack: false,
   });
 
   // Display either the tracked view count or the initial analytics count
   const displayViewCount = isLoading ? nft.analytics.views : viewCount;
 
   return (
-    <Card className="rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+    <Card className="rounded-lg p-0 px-0 shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
       <div className="relative h-48">
         <Image
           src={nft.imageurl}
@@ -36,24 +39,34 @@ const NFTCard = ({ nft }: { nft: any }) => {
           className="object-cover"
         />
       </div>
-      <div className="p-4">
-        <div className="flex justify-between items-center">
+      <div className="p-2">
+        <div className="flex justify-between items-start">
           <div>
-            <h3 className="text-lg font-semibold truncate">{nft.name}</h3>
             <Badge className="text-sm bg-blue-300 mb-2">{nft.symbol}</Badge>
+            <h3 className="text-lg font-semibold truncate">{nft.name}</h3>
           </div>
         </div>
-        <div className="mt-3 flex items-center justify-between">
-          <span className="text-xs">Creator: {nft.analytics.creator}</span>
-          <span className="text-xs flex items-center gap-1">
-            <Eye size={12} /> Views: {displayViewCount}
-          </span>
+        <div className="flex mt-3 items-center gap-2">
+          <Badge
+            variant="secondary"
+            className="text-xs bg-accent flex items-center gap-1"
+          >
+            <Eye className="size-4" /> {displayViewCount}
+          </Badge>
+          <Badge
+            asChild
+            className="bg-accent flex items-center justify-between"
+          >
+            <span className="text-xs">
+              <User className="size-3" weight="bold" />
+              {nft.analytics.creator}
+            </span>
+          </Badge>
         </div>
-        
         {/* Add the proof generation button */}
-        <div className="mt-4 pt-4 border-t border-gray-100">
-          <AssetProofButton 
-            assetId={nft.id} 
+        <div className="mt-4 pt-4">
+          <AssetProofButton
+            assetId={nft.id}
             assetType={nft.assetType}
             assetUrl={nft.assetUrl}
           />
@@ -88,8 +101,11 @@ const Page = () => {
 
   const handleShare = () => {
     // Try to get the creator's handle from the collection data
-    const creatorHandle = collectionData?.userId === session?.user?.id ? session?.user?.socialHandle : collectionData?.creatorHandle;
-    
+    const creatorHandle =
+      collectionData?.userId === session?.user?.id
+        ? session?.user?.socialHandle
+        : collectionData?.creatorHandle;
+
     if (creatorHandle) {
       const shareUrl = `${window.location.origin}/share/${creatorHandle}/${id}`;
       navigator.clipboard.writeText(shareUrl);
@@ -106,19 +122,21 @@ const Page = () => {
     <div className="flex flex-1 flex-col bg-gradient-to-r">
       <div className="container mx-auto p-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold bg-gradient-to-r bg-clip-text text-transparent">
-          NFT Collection
-        </h1>
-          <Button onClick={handleShare} variant="outline" className="gap-2">
-            <Share2 size={16} />
-            Share Collection
-          </Button>
+          <h1 className="text-2xl font-medium`>NFT Collection</h1">
+            NFT Collection
+          </h1>
+
+          <div className="flex items-center gap-2">
+            <CreateAssetButton />
+            <Button onClick={handleShare} variant="outline" className="gap-2">
+              <Share2 size={16} />
+              Share Collection
+            </Button>
+          </div>
         </div>
 
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2"></div>
-          </div>
+          <CardSkeleton className="h-fit w-full" />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {nfts.length > 0 ? (
@@ -130,10 +148,6 @@ const Page = () => {
             )}
           </div>
         )}
-
-        <div className="mt-8">
-          <CreateAssetButton />
-        </div>
       </div>
     </div>
   );
