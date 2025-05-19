@@ -29,7 +29,7 @@ import { toast } from "sonner";
 export enum AssetsCollectionCategory {
   Youtuber = "Youtuber",
   Musician = "Musician",
-  other = "other"
+  other = "other",
 }
 
 export interface TCollectionData {
@@ -58,7 +58,7 @@ const CreateCollectionButton = () => {
     if (collectionData.coverImage) {
       const objectUrl = URL.createObjectURL(collectionData.coverImage);
       setPreviewUrl(objectUrl);
-      
+
       // Clean up the URL when component unmounts or when image changes
       return () => URL.revokeObjectURL(objectUrl);
     } else {
@@ -67,7 +67,7 @@ const CreateCollectionButton = () => {
   }, [collectionData.coverImage]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("file ---", e.target.files)
+    console.log("file ---", e.target.files);
     const file = e.target.files?.[0] || null;
     setCollectionData((prev) => ({
       ...prev,
@@ -89,10 +89,14 @@ const CreateCollectionButton = () => {
     setIsLoading(true);
     const formData = new FormData();
     if (collectionData.coverImage) {
-      formData.append('coverImage', collectionData.coverImage);
+      formData.append("coverImage", collectionData.coverImage);
     }
     try {
-      const result = await createAssetCollection(collectionData, formData, user.user?.id!);
+      const result = await createAssetCollection(
+        collectionData,
+        formData,
+        user.user?.id!
+      );
 
       if (!result.success) {
         toast.error(result.message || "Failed to create collection");
@@ -121,7 +125,7 @@ const CreateCollectionButton = () => {
       <DialogTrigger asChild>
         <SidebarMenuButton
           tooltip="Quick Create"
-          className="min-w-5 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
+          className="min-w-5  max-w-fit bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
         >
           <PlusCircleIcon />
           <span>Create Collection</span>
@@ -137,31 +141,40 @@ const CreateCollectionButton = () => {
             <Label htmlFor="name" className="text-right">
               Name
             </Label>
-            <Input 
-              id="name" 
-              className="col-span-3" 
+            <Input
+              id="name"
+              className="col-span-3"
               value={collectionData.name}
-              onChange={(e) => setCollectionData((prev) => ({...prev, name: e.target.value}))}
+              onChange={(e) =>
+                setCollectionData((prev) => ({ ...prev, name: e.target.value }))
+              }
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="description" className="text-right">
               Description
             </Label>
-            <Input 
-              id="description" 
-              className="col-span-3" 
+            <Input
+              id="description"
+              className="col-span-3"
               value={collectionData.description}
-              onChange={(e) => setCollectionData((prev) => ({...prev, description: e.target.value}))}
+              onChange={(e) =>
+                setCollectionData((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="category" className="text-right">
               Category
             </Label>
-            <Select 
+            <Select
               value={collectionData.category}
-              onValueChange={(value: AssetsCollectionCategory) => setCollectionData((prev) => ({...prev, category: value}))}
+              onValueChange={(value: AssetsCollectionCategory) =>
+                setCollectionData((prev) => ({ ...prev, category: value }))
+              }
             >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Select a category" />
@@ -169,31 +182,37 @@ const CreateCollectionButton = () => {
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Category</SelectLabel>
-                  <SelectItem value={AssetsCollectionCategory.Youtuber}>Youtuber</SelectItem>
-                  <SelectItem value={AssetsCollectionCategory.Musician}>Musician</SelectItem>
-                  <SelectItem value={AssetsCollectionCategory.other}>Other</SelectItem>
+                  <SelectItem value={AssetsCollectionCategory.Youtuber}>
+                    Youtuber
+                  </SelectItem>
+                  <SelectItem value={AssetsCollectionCategory.Musician}>
+                    Musician
+                  </SelectItem>
+                  <SelectItem value={AssetsCollectionCategory.other}>
+                    Other
+                  </SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="coverImage" className="text-right mb-6">
-             Cover Pic
+              Cover Pic
             </Label>
             <div className="col-span-3">
               <div className="flex items-center gap-4">
-                <Input 
-                  id="coverImage" 
+                <Input
+                  id="coverImage"
                   type="file"
                   accept="image/*"
-                  className="flex-1" 
+                  className="flex-1"
                   onChange={handleImageChange}
                 />
                 {previewUrl && (
                   <div className="relative w-12 h-12 rounded overflow-hidden">
-                    <img 
-                      src={previewUrl} 
-                      alt="Cover preview" 
+                    <img
+                      src={previewUrl}
+                      alt="Cover preview"
                       className="object-cover w-full h-full"
                     />
                   </div>
@@ -204,16 +223,14 @@ const CreateCollectionButton = () => {
                   </div>
                 )}
               </div>
-              <p className="text-xs text-gray-400 mt-1">Upload a cover image for your collection (optional)</p>
+              <p className="text-xs text-gray-400 mt-1">
+                Upload a cover image for your collection (optional)
+              </p>
             </div>
           </div>
         </div>
         <DialogFooter>
-          <Button 
-            type="submit" 
-            onClick={handleSubmit}
-            disabled={isLoading}
-          >
+          <Button type="submit" onClick={handleSubmit} disabled={isLoading}>
             {isLoading ? "Creating..." : "Create Collection"}
           </Button>
         </DialogFooter>

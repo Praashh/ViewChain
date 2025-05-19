@@ -1,15 +1,7 @@
-"use client"
-import {
-  BarChartIcon,
-  FolderIcon,
-  LayoutDashboardIcon,
-  TrendingUp,
-  View,
-} from "lucide-react"
+"use client";
 
-import { NavMain } from "@/components/ui/nav-main"
-import { NavSecondary } from "@/components/ui/nav-secondary"
-import { NavUser } from "@/components/ui/nav-user"
+import { NavMain } from "@/components/ui/nav-main";
+import { NavUser } from "@/components/ui/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -18,59 +10,58 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import Link from "next/link"
-import { useSession } from "next-auth/react"
-import { useEffect, useState } from "react"
+} from "@/components/ui/sidebar";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { Logo } from "../svgs/logo";
+import { Layout, TrendUp, ChartBar, FolderOpen } from "@phosphor-icons/react";
 
 const data = {
   navMain: [
     {
-      title: "MarketPace",
+      title: "MarketPlace",
       url: "/marketplace",
-      icon: LayoutDashboardIcon,
+      icon: Layout,
     },
     {
       title: "Trend",
       url: "/marketplace/trend",
-      icon: TrendingUp,
+      icon: TrendUp,
     },
     {
       title: "Analytics",
       url: "/marketplace/analytics",
-      icon: BarChartIcon,
+      icon: ChartBar,
     },
     {
       title: "Collection",
       url: "/marketplace/create-collection",
-      icon: FolderIcon,
-    }
+      icon: FolderOpen,
+    },
   ],
-}
+};
 export interface TSessionUser {
   id: string;
   name?: string | null;
   email?: string | null;
 }
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const {data: userData}  =  useSession();
+  const { data: userData } = useSession();
   const [user, setUser] = useState<TSessionUser>();
 
-  useEffect(()=>{
-    setUser(userData?.user)
-  }, [])
+  useEffect(() => {
+    setUser(userData?.user);
+  }, []);
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
-            >
-              <Link href="#">
-                <View className="h-5 w-5" />
-                <span className="text-base font-semibold">ViewChain</span>
+            <SidebarMenuButton className="flex group-data-[collapsible=icon]:p-1! hover:bg-transparent hover:text-foreground  border-white p-0 items-center ">
+              <Link href="#" className="flex items-center gap-2">
+                <Logo className="size-6" />
+                <span className="text-base font-normal">ViewChain</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -83,5 +74,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavUser user={user as TSessionUser} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

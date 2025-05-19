@@ -9,11 +9,11 @@ export default function MarketPlace({
 }>) {
   return (
     <SidebarProvider>
-    <AppSidebar variant="inset" />
-    <SidebarInset>
-      <SiteHeader />
-  {children}
-    </SidebarInset>
-  </SidebarProvider>
-);
+      <AppSidebar variant="inset" collapsible="icon" />
+      <SidebarInset className="bg-background/40 border">
+        <SiteHeader />
+        {children}
+      </SidebarInset>
+    </SidebarProvider>
+  );
 }

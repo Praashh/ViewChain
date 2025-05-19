@@ -1,36 +1,25 @@
-"use client"
+"use client";
 
-import {
-  LogOutIcon,
-  MoreVerticalIcon,
-} from "lucide-react"
+import { LogOutIcon, MoreVerticalIcon } from "lucide-react";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { signOut } from "next-auth/react"
-import { TSessionUser } from "./app-sidebar"
+} from "@/components/ui/sidebar";
+import { signOut } from "next-auth/react";
+import { TSessionUser } from "./app-sidebar";
 
-export function NavUser({
-  user,
-}: {
-  user:TSessionUser
-}) {
-  const { isMobile } = useSidebar()
+export function NavUser({ user }: { user: TSessionUser }) {
+  const { isMobile } = useSidebar();
 
   return (
     <SidebarMenu>
@@ -39,14 +28,22 @@ export function NavUser({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:bg-accent hover:bg-accent hover:text-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage src={user?.name?.charAt(0)} alt={user?.name!} />
-                <AvatarFallback className="rounded-lg">{user?.name?.charAt(0).toUpperCase()}</AvatarFallback>
+              <Avatar className="h-8 w-8 rounded-lg bg-background grayscale">
+                <AvatarImage
+                  className="bg-background"
+                  src={user?.name?.charAt(0)}
+                  alt={user?.name!}
+                />
+                <AvatarFallback className="rounded-lg">
+                  {user?.name?.charAt(0).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user?.name || "user"}</span>
+                <span className="truncate font-medium">
+                  {user?.name || "user"}
+                </span>
                 <span className="truncate text-xs text-muted-foreground">
                   {user?.email || "user@gmail.com"}
                 </span>
@@ -90,7 +87,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup> */}
             {/* <DropdownMenuSeparator /> */}
-            <DropdownMenuItem onClick={() => signOut({callbackUrl: "/"})}>
+            <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })}>
               <LogOutIcon />
               Log out
             </DropdownMenuItem>
@@ -98,5 +95,5 @@ export function NavUser({
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

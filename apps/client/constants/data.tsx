@@ -96,7 +96,7 @@ export const workingImages = [work1, work1, work1, work1];
 
 export const team = [
   {
-    name: "Prasant",
+    name: "Praash",
     role: "Full Stack Developer",
     image: "https://avatars.githubusercontent.com/u/99237795",
     github: "https://github.com/Praashh",
