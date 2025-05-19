@@ -15,56 +15,56 @@ datasource db {
 }
 
 model User {
-  id String  @id @default(uuid())
-  name String
-  publicKey  String? @unique
-  email   String  @unique
-  isOnboarded  Boolean   @default(false)
-  creatorType         CreatorType?  @default(Youtuber)
-  socialHandle  String?   @unique
+  id            String                       @id @default(uuid())
+  name          String
+  publicKey     String?                      @unique
+  email         String                       @unique
+  isOnboarded   Boolean                      @default(false)
+  creatorType   CreatorType?                 @default(Youtuber)
+  socialHandle  String?                      @unique
   socialAccount String?
-  proof   Json?
-  experience  ExperienceWithDigitalAssets? @default(Beginner)
-  asset  AssetsCollection[]
-  assetViews AssetView[]
+  proof         Json?
+  experience    ExperienceWithDigitalAssets? @default(Beginner)
+  asset         AssetsCollection[]
+  assetViews    AssetView[]
 }
 
 model AssetsCollection {
-  id String @id @default(uuid())
-  name String
-  description String
-  category AssetsCollectionCategory
-  userId  String
-  collectionImageUrl  String?
-  underdogProjectId Int @default(0)
-  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  asset Asset []
+  id                 String                   @id @default(uuid())
+  name               String
+  description        String
+  category           AssetsCollectionCategory
+  userId             String
+  collectionImageUrl String?
+  underdogProjectId  Int                      @default(0)
+  user               User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  asset              Asset[]
 }
 
 model Asset {
-  id String @id @default(uuid())
-  name String
-  symbol String
-  description String
-  imageurl  String
-  assetUrl  String
-  assetType String
-  metadata String 
-  analytics Json
-  collectionId String
+  id               String           @id @default(uuid())
+  name             String
+  symbol           String
+  description      String
+  imageurl         String
+  assetUrl         String
+  assetType        String
+  metadata         String
+  analytics        Json
+  collectionId     String
   AssetsCollection AssetsCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
-  assetViews AssetView[]
-  viewProofs ViewProof[]
+  assetViews       AssetView[]
+  viewProofs       ViewProof[]
 }
 
 model AssetView {
-  id        String   @id @default(uuid())
-  assetId   String
-  userId    String?
+  id          String   @id @default(uuid())
+  assetId     String
+  userId      String?
   fingerprint String?
-  timestamp DateTime @default(now())
-  asset     Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
-  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  timestamp   DateTime @default(now())
+  asset       Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ViewProof {

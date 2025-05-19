@@ -10,6 +10,7 @@ import { reclaim, sol, sol2 } from "@/constants/image";
 import Image from "next/image";
 import { signIn, signOut, useSession } from "next-auth/react";
 import useCheckUserBoarded from "@/hooks/useCheckUserBoarded";
+import Link from "next/link";
 
 export const Hero = () => {
   const { data: session } = useSession();
@@ -53,18 +54,16 @@ export const Hero = () => {
 
         <div className="flex z-[20] gap-4 sm:flex-row flex-col items-center justify-center w-full mb-4">
           {session ? (
-            <Button
-              className="hidden lg:inline-flex"
-              variant="secondary"
-              onClick={() => signOut()}
-            >
-              Logout
+            <Button asChild className="hidden lg:inline-flex">
+              <Link href="/marketplace">
+                Visit Marketplace
+                <ArrowRight className="size-5" />
+              </Link>
             </Button>
           ) : (
             <Button
               onClick={() => signIn("google", { callbackUrl })}
               className="w-full sm:w-48 h-10"
-              variant="default"
             >
               Get Started
               <ArrowRight className="size-5" />

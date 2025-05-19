@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import { SidebarMenuButton } from "./sidebar";
 import { PlusCircleIcon, ImageIcon } from "lucide-react";
@@ -48,11 +48,11 @@ export interface TNftData {
 const CreateAssetButton = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  
-  const id = pathname.split('/').pop();
-  const projectId: number = Number(searchParams.get('projectId'));
+
+  const id = pathname.split("/").pop();
+  const projectId: number = Number(searchParams.get("projectId"));
   const user = useAuth();
-  
+
   const [nftData, setNftData] = useState<TNftData>({
     category: AssetsCollectionCategory.other,
     description: "",
@@ -165,18 +165,18 @@ const CreateAssetButton = () => {
           {}
         ),
       };
-      
+
       const result = await createNft(nftData, formData, projectId, user, id!);
-      
+
       // Complete the progress
       setProgress(100);
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       if (!result?.success) {
         toast.error(result?.message);
         return;
       }
-      
+
       toast.success(result.message);
       setIsOpen(false);
       window.location.reload();
@@ -194,7 +194,7 @@ const CreateAssetButton = () => {
       <DialogTrigger asChild>
         <SidebarMenuButton
           tooltip="Quick Create"
-          className="max-w-36 mt-4 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
+          className="max-w-36 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
         >
           <PlusCircleIcon />
           <span>Create Asset</span>
@@ -360,16 +360,18 @@ const CreateAssetButton = () => {
               ></div>
             </div>
             <div className="flex justify-between text-xs text-gray-400 mt-1">
-              <span>{progress <= 88 ? "Creating your assest..." : "Almost there..."}</span>
+              <span>
+                {progress <= 88 ? "Creating your assest..." : "Almost there..."}
+              </span>
               <span>{progress}%</span>
             </div>
           </div>
         )}
 
         <DialogFooter>
-          <Button 
-            type="submit" 
-            onClick={handleSubmit} 
+          <Button
+            type="submit"
+            onClick={handleSubmit}
             disabled={isLoading}
             className="relative"
           >

@@ -1,10 +1,12 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import useCheckUserBoarded from "@/hooks/useCheckUserBoarded";
+import Link from "next/link";
 
 export const CTA = () => {
   const { callbackUrl } = useCheckUserBoarded();
+  const { data: session } = useSession();
   return (
     <div className="w-full py-16 max-w-4xl my-20 mx-auto overflow-hidden px-4 relative bg-accent/40 rounded-2xl h-[20rem] flex flex-col items-center justify-center gap-4">
       <div className="absolute inset-0 bg-background rounded-xl m-3 z-[10]"></div>
@@ -17,9 +19,15 @@ export const CTA = () => {
         <p className="text-neutral-300 text-center text-balance">
           Join our community and start building your own projects today.
         </p>
-        <Button onClick={() => signIn("google", { callbackUrl })}>
-          Signin now
-        </Button>
+        {!session ? (
+          <Button onClick={() => signIn("google", { callbackUrl })}>
+            Signin now
+          </Button>
+        ) : (
+          <Button asChild>
+            <Link href="/marketplace">Visit Marketplace</Link>
+          </Button>
+        )}
       </div>
     </div>
   );
