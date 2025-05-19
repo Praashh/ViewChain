@@ -122,9 +122,7 @@ const Page = () => {
     <div className="flex flex-1 flex-col bg-gradient-to-r">
       <div className="container mx-auto p-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-medium`>NFT Collection</h1">
-            NFT Collection
-          </h1>
+          <h1 className="text-2xl font-medium">NFT Collection</h1>
 
           <div className="flex items-center gap-2">
             <CreateAssetButton />
