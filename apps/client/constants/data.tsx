@@ -8,7 +8,7 @@ import {
   Folder,
   Network,
 } from "@phosphor-icons/react";
-import { work1 } from "./image";
+import { CreateCollection, onboarding, upload, analytics } from "./image";
 import { Activity } from "lucide-react";
 
 export const features = [
@@ -52,15 +52,15 @@ export const steps = [
       "Create an account to get started and access your personalized dashboard.",
   },
   {
+    icon: Folder,
+    title: "Create a Collection for your digital assets",
+    description: "Create a Collection for your digital assets.",
+  },
+  {
     icon: Video,
     title: "Upload Asset",
     description:
       "Upload your asstes(images/videos) to get the decentralized engegment count.",
-  },
-  {
-    icon: Folder,
-    title: "Create a Collection for your digital assets",
-    description: "Create a Collection for your digital assets.",
   },
   {
     icon: Network,
@@ -92,19 +92,19 @@ export const faqs = [
   },
 ];
 
-export const workingImages = [work1, work1, work1, work1];
+export const workingImages = [onboarding, CreateCollection, upload, analytics];
 
 export const team = [
   {
     name: "Praash",
-    role: "Full Stack Developer",
+    role: "Software Engineer",
     image: "https://avatars.githubusercontent.com/u/99237795",
     github: "https://github.com/Praashh",
     x: "https://x.com/10Xpraash",
   },
   {
     name: "Yash Makijha",
-    role: "Full Stack Developer",
+    role: "Software Engineer",
     image: "https://avatars.githubusercontent.com/u/125460543",
     github: "https://github.com/yashmakhija",
     x: "https://x.com/Yashmakhija12",
