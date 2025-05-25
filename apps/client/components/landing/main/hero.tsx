@@ -70,9 +70,11 @@ export const Hero = () => {
             </Button>
           )}
 
-          <Button className="w-full sm:w-48 h-10" variant="secondary">
-            Take a Demo
-            <CaretCircleDoubleDown className="size-5" />
+          <Button className="w-full sm:w-48 h-10" variant="secondary" asChild>
+            <Link href={"https://cal.com/prashant-varma-odaotf/15min?duration=10"} target="_blank" rel="noopener noreferrer">
+              Take a Demo
+              <CaretCircleDoubleDown className="size-5" />
+            </Link>
           </Button>
         </div>
         <UsersAvatar />
