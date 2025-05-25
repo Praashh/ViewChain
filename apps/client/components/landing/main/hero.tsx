@@ -42,14 +42,13 @@ export const Hero = () => {
               alt="reclaim"
             />
           </div>
-          <div>Powered by Reclaim Protocol with power of zkTLS</div>
+          <div>Powered by Reclaim Protocol with power of zkpTLS</div>
         </Badge>
         <h1 className="lg:text-7xl md:text-5xl text-4xl text-center text-balance md:w-[80%] w-full font">
           Transparent your assets&apos;s views and interactions.
         </h1>
         <p className="text-center my-2 text-neutral-300 text-balance md:w-[60%] w-full sm:text-lg text-base font-light">
-          A decentralized platform that mints NFTs for every view or listen,
-          turning audience engagement into verifiable, on-chain provenance
+          A  decentralized platform that uses blockchain and zkpTLS to verify content authenticity, track real views, and help creators to share authentic stats of their content.
         </p>
 
         <div className="flex z-[20] gap-4 sm:flex-row flex-col items-center justify-center w-full mb-4">
