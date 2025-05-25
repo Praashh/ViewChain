@@ -117,7 +117,6 @@ export default function OnboardingPage() {
         console.log("Wallet address:", walletAddress);
 
         formData.userid = user.id;
-        console.log("form.userid", formData.userid);
         // Add wallet address to form data
         setFormData((prev) => ({
           ...prev,
@@ -125,17 +124,11 @@ export default function OnboardingPage() {
           walletAddress: walletAddress,
         }));
 
-        console.log("Form data ready for API call:", {
-          ...formData,
-          walletConnected: true,
-          walletAddress: walletAddress,
-        });
 
         const response = await onboardUser({
           ...formData,
           walletAddress: walletAddress,
         });
-        console.log("response---", response);
         if (response.success) {
           toast.success("Wallet connected successfully!");
         } else {
@@ -176,8 +169,6 @@ export default function OnboardingPage() {
 
     // Extract the username
     const username = contextData.extractedParameters.username;
-    console.log(username)
-    console.log(formData.socialMedia)
 
     if (username !== formData.socialMedia) {
       toast.error(
@@ -191,8 +182,7 @@ export default function OnboardingPage() {
         ...formData,
       });
       const emailResponse = await sendEmailNotification(user.email)
-      console.log("emailResponse", emailResponse)
-      console.log(emailResponse)
+
       if (response.success) {
         toast.success(
           "You have successfully completed the onboarding process!"

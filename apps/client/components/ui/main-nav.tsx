@@ -43,7 +43,7 @@ const Navbar = () => {
           <span className="text-xl font-medium">ViewChain</span>
         </Link>
         <div className="flex items-center gap-2">
-          <Button variant={"secondary"}>Contact</Button>
+          <Link href={"https://cal.com/prashant-varma-odaotf/15min?duration=10"} target="_blank" rel="noopener noreferrer"><Button variant={"secondary"}>Contact</Button></Link>
           {session ? (
             <Avatar className="bg-primary">
               <AvatarImage src={session.user?.name?.charAt(0)} />
