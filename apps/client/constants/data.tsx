@@ -25,7 +25,7 @@ export const features = [
     icon: ChartBar,
   },
   {
-    title: "zkTLS-Powered Privacy and Security",
+    title: "zkpTLS-Powered Privacy and Security",
     description:
       "Utilizes zero-knowledge TLS to securely verify data while preserving user privacy.",
     icon: ShieldCheck,
@@ -83,7 +83,7 @@ export const faqs = [
   {
     question: "Is my data safe on ViewChain?",
     answer:
-      "Yes. ViewChain uses zkTLS (zero-knowledge TLS) to securely verify engagement without exposing private or sensitive information.",
+      "Yes. ViewChain uses zkpTLS (zero-knowledge proof TLS) to securely verify engagement without exposing private or sensitive information.",
   },
   {
     question: "Can I analyze how my content is performing?",
