@@ -1,4 +1,3 @@
-// File: app/api/nft/create/route.ts
 import { NextResponse } from "next/server";
 import { uploadAssetToCloudinary } from "@/config/cloudinary";
 import { prisma } from "@repo/db";
