@@ -26,7 +26,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { usePathname, useSearchParams } from "next/navigation";
-import { createNft } from "@/actions/NFT/createNft";
+import axios from "axios";
 
 export enum AssetsCollectionCategory {
   Youtuber = "Youtuber",
@@ -68,8 +68,6 @@ const CreateAssetButton = () => {
   const [assetFile, setAssetFile] = useState<File | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [extraAttributeKey, setExtraAttributeKey] = useState("");
-  const [extraAttributeValue, setExtraAttributeValue] = useState("");
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -96,26 +94,6 @@ const CreateAssetButton = () => {
     setAssetFile(file);
   };
 
-  const addExtraAttribute = () => {
-    if (extraAttributeKey && extraAttributeValue) {
-      setNftData((prev) => ({
-        ...prev,
-        extraAttributes: [
-          ...prev.extraAttributes,
-          { key: extraAttributeKey, value: extraAttributeValue },
-        ],
-      }));
-      setExtraAttributeKey("");
-      setExtraAttributeValue("");
-    }
-  };
-
-  const removeExtraAttribute = (index: number) => {
-    setNftData((prev) => ({
-      ...prev,
-      extraAttributes: prev.extraAttributes.filter((_, i) => i !== index),
-    }));
-  };
 
   const handleSubmit = async () => {
     if (!user.isLoggedIn) {
@@ -133,10 +111,19 @@ const CreateAssetButton = () => {
       return;
     }
 
+    if (!nftData.coverImage) {
+      toast.error("Cover image is required");
+      return;
+    }
+
+    if (!assetFile) {
+      toast.error("Asset file is required");
+      return;
+    }
+
     setIsLoading(true);
     setProgress(0);
 
-    // Start fake progress
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 90) {
@@ -146,43 +133,53 @@ const CreateAssetButton = () => {
       });
     }, 500);
 
-    const formData = new FormData();
-    if (nftData.coverImage) {
-      formData.append("coverImage", nftData.coverImage);
-    }
-    if (assetFile) {
-      formData.append("asset", assetFile);
-    }
-
     try {
-      const attributes = {
-        name: nftData.attributeName,
-        ...nftData.extraAttributes.reduce(
-          (acc, attr) => ({
-            ...acc,
-            [attr.key]: attr.value,
-          }),
-          {}
-        ),
-      };
+      const formData = new FormData();
+      
+      formData.append("coverImage", nftData.coverImage);
+      formData.append("asset", assetFile);
 
-      const result = await createNft(nftData, formData, projectId, user, id!);
+      formData.append("params", JSON.stringify({
+        name: nftData.name,
+        description: nftData.description,
+        category: nftData.category,
+        symbol: nftData.symbol,
+        attributeName: nftData.attributeName,
+        extraAttributes: nftData.extraAttributes
+      }));
+      
+      formData.append("projectId", projectId.toString());
+      formData.append("collectionId", id!);
+      formData.append("user", JSON.stringify(user.user));
 
-      // Complete the progress
+      const response = await axios.post('/api/assets/new', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setProgress(percentCompleted);
+          }
+        },
+      });
+
+      const result = response.data;
+
       setProgress(100);
       await new Promise((resolve) => setTimeout(resolve, 300));
 
       if (!result?.success) {
-        toast.error(result?.message);
+        toast.error(result?.message || "Failed to create NFT");
         return;
       }
 
-      toast.success(result.message);
+      toast.success("NFT created successfully");
       setIsOpen(false);
       window.location.reload();
-    } catch (error) {
-      toast.error("An unexpected error occurred");
-      console.error(error);
+    } catch (error: any) {
+      console.error("Error creating NFT:", error);
+      toast.error(error.response?.data?.message || "An unexpected error occurred");
     } finally {
       clearInterval(progressInterval);
       setIsLoading(false);
@@ -361,7 +358,7 @@ const CreateAssetButton = () => {
             </div>
             <div className="flex justify-between text-xs text-gray-400 mt-1">
               <span>
-                {progress <= 88 ? "Creating your assest..." : "Almost there..."}
+                {progress <= 88 ? "Creating your asset..." : "Almost there..."}
               </span>
               <span>{progress}%</span>
             </div>

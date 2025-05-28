@@ -23,8 +23,8 @@ import {
   SelectGroup,
 } from "./select";
 import { useAuth } from "@/hooks/useAuth";
-import { createAssetCollection } from "@/actions/createAssetCollection";
 import { toast } from "sonner";
+import axios from "axios";
 
 export enum AssetsCollectionCategory {
   Youtuber = "Youtuber",
@@ -51,15 +51,12 @@ const CreateCollectionButton = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const user = useAuth();
+  const { isLoggedIn, user } = useAuth();
 
-  // Generate preview URL when image is selected
   useEffect(() => {
     if (collectionData.coverImage) {
       const objectUrl = URL.createObjectURL(collectionData.coverImage);
       setPreviewUrl(objectUrl);
-
-      // Clean up the URL when component unmounts or when image changes
       return () => URL.revokeObjectURL(objectUrl);
     } else {
       setPreviewUrl(null);
@@ -67,7 +64,6 @@ const CreateCollectionButton = () => {
   }, [collectionData.coverImage]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("file ---", e.target.files);
     const file = e.target.files?.[0] || null;
     setCollectionData((prev) => ({
       ...prev,
@@ -76,7 +72,7 @@ const CreateCollectionButton = () => {
   };
 
   const handleSubmit = async () => {
-    if (!user.isLoggedIn) {
+    if (!isLoggedIn || !user?.id) {
       toast.error("You need to be logged in to create a collection");
       return;
     }
@@ -87,37 +83,53 @@ const CreateCollectionButton = () => {
     }
 
     setIsLoading(true);
-    const formData = new FormData();
-    if (collectionData.coverImage) {
-      formData.append("coverImage", collectionData.coverImage);
-    }
+    
     try {
-      const result = await createAssetCollection(
-        collectionData,
-        formData,
-        user.user?.id!
-      );
+      const formData = new FormData();
+      formData.append('collectionData', JSON.stringify({
+        name: collectionData.name,
+        description: collectionData.description,
+        category: collectionData.category
+      }));
+      
+      if (collectionData.coverImage) {
+        formData.append('coverImage', collectionData.coverImage);
+      }
+      
+      formData.append('userId', user.id);
+
+      const response = await axios.post('/api/collections/new', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }); 
+
+      const result = response.data;
 
       if (!result.success) {
-        toast.error(result.message || "Failed to create collection");
-      } else {
-        toast.success("Collection created successfully");
-        setCollectionData({
-          category: AssetsCollectionCategory.other,
-          description: "",
-          name: "",
-          coverImage: null,
-          coverImageUrl: "",
-        });
-        setPreviewUrl(null);
-        setIsOpen(false);
+        throw new Error(result.message || "Failed to create collection");
       }
-    } catch (error) {
-      toast.error("An unexpected error occurred");
-      console.error(error);
+
+      toast.success("Collection created successfully");
+      resetForm();
+      setIsOpen(false);
+    } catch (error: any) {
+      console.error("Creation error:", error);
+      toast.error(error.message || "An unexpected error occurred");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const resetForm = () => {
+    setCollectionData({
+      category: AssetsCollectionCategory.other,
+      description: "",
+      name: "",
+      coverImage: null,
+      coverImageUrl: "",
+    });
+    setPreviewUrl(null);
   };
 
   return (
@@ -125,7 +137,7 @@ const CreateCollectionButton = () => {
       <DialogTrigger asChild>
         <SidebarMenuButton
           tooltip="Quick Create"
-          className="min-w-5  max-w-fit bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
+          className="min-w-5 max-w-fit bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
         >
           <PlusCircleIcon />
           <span>Create Collection</span>
@@ -208,7 +220,7 @@ const CreateCollectionButton = () => {
                   className="flex-1"
                   onChange={handleImageChange}
                 />
-                {previewUrl && (
+                {previewUrl ? (
                   <div className="relative w-12 h-12 rounded overflow-hidden">
                     <img
                       src={previewUrl}
@@ -216,8 +228,7 @@ const CreateCollectionButton = () => {
                       className="object-cover w-full h-full"
                     />
                   </div>
-                )}
-                {!previewUrl && (
+                ) : (
                   <div className="flex items-center justify-center w-12 h-12 bg-gray-700 rounded">
                     <ImageIcon className="w-6 h-6 text-gray-400" />
                   </div>
@@ -230,7 +241,12 @@ const CreateCollectionButton = () => {
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleSubmit} disabled={isLoading}>
+          <Button 
+            type="submit" 
+            onClick={handleSubmit} 
+            disabled={isLoading}
+            className="disabled:opacity-50"
+          >
             {isLoading ? "Creating..." : "Create Collection"}
           </Button>
         </DialogFooter>
