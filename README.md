@@ -160,14 +160,9 @@ pnpm db:deploy    # Deploy migrations to production
 - **Marketers**: Access authentic engagement analytics
 - **Audiences**: Support creators directly, access exclusive content
 
-## 🚀 Future Roadmap
+---
 
-- Enhanced analytics dashboards
-- Additional blockchain integrations
-- Mobile application
-- Creator marketplace expansion
-- API for third-party integrations
+## 🏆 WON 100xdevs Solana Hackathon 2.0
 
-## 📄 License
+https://x.com/100xDevs/status/1934240746334470277
 
-ViewChain is licensed under the Apache 2.0 License.
