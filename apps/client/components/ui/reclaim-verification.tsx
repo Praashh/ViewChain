@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
 import { ReclaimProofRequest } from '@reclaimprotocol/js-sdk';
 
@@ -22,7 +22,7 @@ export default function ReclaimVerification({ account, onVerificationComplete }:
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const getVerificationReq = async () => {
+  const getVerificationReq = useCallback(async () => {
     try {
       setStatus('initializing');
       setIsLoading(true);
@@ -30,11 +30,11 @@ export default function ReclaimVerification({ account, onVerificationComplete }:
       const APP_ID = process.env.NEXT_PUBLIC_RECLAIM_APP_ID as string;
       const APP_SECRET = process.env.NEXT_PUBLIC_RECLAIM_APP_SECRET as string;
       let PROVIDER_ID;
-      if(account == "Instagram"){
+      if (account == "Instagram") {
         PROVIDER_ID = process.env.NEXT_PUBLIC_INSTAGRAM_OWNERSHIP_PROVIDER_ID as string;
-      }else if (account === "Youtube"){
+      } else if (account === "Youtube") {
         PROVIDER_ID = process.env.NEXT_PUBLIC_YOUTUBE_PROVIDER_ID as string;
-      }else{
+      } else {
         PROVIDER_ID = process.env.NEXT_PUBLIC_TWITTER_USER_PROFILE_PROVIDER_ID as string;
       }
       console.log("APP_ID", APP_ID, "APP_SECRET", APP_SECRET, "PROVIDER_ID", PROVIDER_ID)
@@ -52,10 +52,10 @@ export default function ReclaimVerification({ account, onVerificationComplete }:
           console.log('Verification success', proofs);
           setProofs(proofs as any);
           setStatus('success');
-          
+
           // Call the callback to update parent component
           onVerificationComplete('verified', proofs as any);
-          
+
           if (typeof window !== 'undefined') {
             localStorage.setItem('reclaimVerificationStatus', 'verified');
             localStorage.setItem('reclaimProofs-viewchain', JSON.stringify(proofs));
@@ -65,10 +65,10 @@ export default function ReclaimVerification({ account, onVerificationComplete }:
           console.error('Verification failed', error);
           setErrorMessage(error.message || 'Verification failed');
           setStatus('error');
-          
+
           // Notify parent component about failure
           onVerificationComplete('failed');
-          
+
           setTimeout(() => {
             setStatus('ready');
             setErrorMessage('');
@@ -83,7 +83,7 @@ export default function ReclaimVerification({ account, onVerificationComplete }:
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [account, onVerificationComplete]);
 
   const handleRetry = () => {
     setProofs(null);
@@ -95,7 +95,7 @@ export default function ReclaimVerification({ account, onVerificationComplete }:
     if (typeof window !== 'undefined') {
       const savedStatus = localStorage.getItem('reclaimVerificationStatus');
       const savedProofs = localStorage.getItem('reclaimProofs-viewchiain');
-      
+
       if (savedStatus === 'verified' && savedProofs) {
         const parsedProofs = JSON.parse(savedProofs);
         setProofs(parsedProofs);
@@ -107,12 +107,12 @@ export default function ReclaimVerification({ account, onVerificationComplete }:
         getVerificationReq();
       }
     }
-  }, []);
+  }, [getVerificationReq, onVerificationComplete]);
 
   return (
     <div className="p-6 max-w-md mx-auto bg-white rounded-xl shadow-md">
       <h1 className="text-xl text-gray-800 text-center font-bold mb-4">Scan the QR and Verify Yourself</h1>
-      
+
       {isLoading && (
         <div className="text-center py-4">
           <p>Initializing verification...</p>
@@ -134,7 +134,7 @@ export default function ReclaimVerification({ account, onVerificationComplete }:
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
           <strong className="font-bold">Error:</strong>
           <span className="block sm:inline"> {errorMessage}</span>
-          <button 
+          <button
             onClick={handleRetry}
             className="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
           >
@@ -147,8 +147,8 @@ export default function ReclaimVerification({ account, onVerificationComplete }:
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
           <h2 className="font-bold text-lg mb-2">Verification Successful!</h2>
           <p className="mb-4">Your identity has been verified successfully.</p>
-          
-         {process.env.NODE_ENV === "development"  && <details className="mb-4">
+
+          {process.env.NODE_ENV === "development" && <details className="mb-4">
             <summary className="cursor-pointer font-medium">View Proof Details</summary>
             <pre className="mt-2 p-2 bg-gray-100 rounded overflow-auto text-xs max-h-60">
               {JSON.stringify(proofs, null, 2)}

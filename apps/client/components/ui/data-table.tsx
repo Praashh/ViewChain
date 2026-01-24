@@ -15,7 +15,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDownIcon, MoreVerticalIcon, Share2 } from "lucide-react";
+import { ChevronDownIcon, Share2 } from "lucide-react";
 import { z } from "zod";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -25,8 +25,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -40,7 +38,6 @@ import {
 import { Badge } from "./badge";
 import Link from "next/link";
 import CreateCollectionButton from "./create-collection-button";
-import { Layout } from "@phosphor-icons/react";
 import { Skeleton } from "./skeleton";
 
 // Define the schema for your data
@@ -54,6 +51,34 @@ export const schema = z.object({
   underdogProjectId: z.number(),
   creatorHandle: z.string().nullable(),
 });
+
+const ShareCell = ({ row }: { row: any }) => {
+  const { data: session } = useSession();
+
+  const handleShare = () => {
+    // Try to get the creator's handle from the collection data
+    const creatorHandle =
+      row.original.creatorHandle || session?.user?.socialHandle;
+
+    if (creatorHandle) {
+      const shareUrl = `${window.location.origin}/share/${creatorHandle}/${row.original.id}`;
+      navigator.clipboard.writeText(shareUrl);
+      toast.success("Share link copied to clipboard!");
+    } else {
+      // Fallback to a generic share URL if no handle is available
+      const shareUrl = `${window.location.origin}/share/collection/${row.original.id}`;
+      navigator.clipboard.writeText(shareUrl);
+      toast.success("Share link copied to clipboard!");
+    }
+  };
+
+  return (
+    <Button onClick={handleShare} variant="ghost" size="sm" className="gap-2">
+      <Share2 size={16} />
+      Share
+    </Button>
+  );
+};
 
 // Define the columns for your table
 const columns: ColumnDef<z.infer<typeof schema>>[] = [
@@ -99,38 +124,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   {
     accessorKey: "share",
     header: "Share",
-    cell: ({ row }) => {
-      const { data: session } = useSession();
-
-      const handleShare = () => {
-        // Try to get the creator's handle from the collection data
-        const creatorHandle =
-          row.original.creatorHandle || session?.user?.socialHandle;
-
-        if (creatorHandle) {
-          const shareUrl = `${window.location.origin}/share/${creatorHandle}/${row.original.id}`;
-          navigator.clipboard.writeText(shareUrl);
-          toast.success("Share link copied to clipboard!");
-        } else {
-          // Fallback to a generic share URL if no handle is available
-          const shareUrl = `${window.location.origin}/share/collection/${row.original.id}`;
-          navigator.clipboard.writeText(shareUrl);
-          toast.success("Share link copied to clipboard!");
-        }
-      };
-
-      return (
-        <Button
-          onClick={handleShare}
-          variant="ghost"
-          size="sm"
-          className="gap-2"
-        >
-          <Share2 size={16} />
-          Share
-        </Button>
-      );
-    },
+    cell: ({ row }) => <ShareCell row={row} />,
   },
 ];
 
@@ -234,9 +228,9 @@ export function DataTable({
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                       </TableHead>
                     );
                   })}

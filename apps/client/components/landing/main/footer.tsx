@@ -1,5 +1,5 @@
 import { Logo } from "@/components/svgs/logo";
-import { GithubLogo, LinkedinLogo, XLogo } from "@phosphor-icons/react";
+import { GithubLogo, XLogo } from "@phosphor-icons/react";
 import Link from "next/link";
 import { team } from "@/constants/data";
 import {
@@ -97,11 +97,10 @@ export const Footer = () => {
               <span
                 // onClick={() => router.push("/")}
                 key={`item-${index}`}
-                className={`text-[4rem] md:text-[6rem] lg:text-[13rem] font-bold ${
-                  index + 1 <= arr.length / 2
+                className={`text-[4rem] md:text-[6rem] lg:text-[13rem] font-bold ${index + 1 <= arr.length / 2
                     ? "hover:-rotate-12"
                     : "hover:rotate-12"
-                }  cursor-pointer transition-all duration-200 ease-out hover:bg-primary  hover:scale-110 bg-gradient-to-b from-black/20 dark:from-white/20 bg-clip-text text-transparent`}
+                  }  cursor-pointer transition-all duration-200 ease-out hover:bg-primary  hover:scale-110 bg-gradient-to-b from-black/20 dark:from-white/20 bg-clip-text text-transparent`}
               >
                 {item}
               </span>

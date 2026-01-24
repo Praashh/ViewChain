@@ -51,8 +51,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [user, setUser] = useState<TSessionUser>();
 
   useEffect(() => {
-    setUser(userData?.user);
-  }, []);
+    setUser(userData?.user as TSessionUser);
+  }, [userData?.user]);
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>

@@ -27,9 +27,10 @@ export default function AssetsCollection() {
 
   useEffect(() => {
     const fetchCollections = async () => {
+      if (!user?.id) return;
       console.log(user?.id);
       try {
-        const result = await getAssetCollections(user?.id!);
+        const result = await getAssetCollections(user.id);
 
         if (result && result.assetCollections) {
           setCollections(result.assetCollections);
@@ -47,7 +48,7 @@ export default function AssetsCollection() {
     };
 
     fetchCollections();
-  }, []);
+  }, [user?.id]);
 
   console.log("collections--", collections);
 

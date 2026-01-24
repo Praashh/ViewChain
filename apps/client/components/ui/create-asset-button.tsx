@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { SidebarMenuButton } from "./sidebar";
 import { PlusCircleIcon, ImageIcon } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -135,7 +136,7 @@ const CreateAssetButton = () => {
 
     try {
       const formData = new FormData();
-      
+
       formData.append("coverImage", nftData.coverImage);
       formData.append("asset", assetFile);
 
@@ -147,7 +148,7 @@ const CreateAssetButton = () => {
         attributeName: nftData.attributeName,
         extraAttributes: nftData.extraAttributes
       }));
-      
+
       formData.append("projectId", projectId.toString());
       formData.append("collectionId", id!);
       formData.append("user", JSON.stringify(user.user));
@@ -306,10 +307,13 @@ const CreateAssetButton = () => {
                 />
                 {previewUrl && (
                   <div className="relative w-12 h-12 rounded overflow-hidden">
-                    <img
+                    <Image
                       src={previewUrl}
                       alt="Cover preview"
+                      width={48}
+                      height={48}
                       className="object-cover w-full h-full"
+                      unoptimized
                     />
                   </div>
                 )}

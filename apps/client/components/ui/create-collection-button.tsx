@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { SidebarMenuButton } from "./sidebar";
 import { PlusCircleIcon, ImageIcon } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -83,7 +84,7 @@ const CreateCollectionButton = () => {
     }
 
     setIsLoading(true);
-    
+
     try {
       const formData = new FormData();
       formData.append('collectionData', JSON.stringify({
@@ -91,18 +92,18 @@ const CreateCollectionButton = () => {
         description: collectionData.description,
         category: collectionData.category
       }));
-      
+
       if (collectionData.coverImage) {
         formData.append('coverImage', collectionData.coverImage);
       }
-      
+
       formData.append('userId', user.id);
 
       const response = await axios.post('/api/collections/new', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-      }); 
+      });
 
       const result = response.data;
 
@@ -222,10 +223,13 @@ const CreateCollectionButton = () => {
                 />
                 {previewUrl ? (
                   <div className="relative w-12 h-12 rounded overflow-hidden">
-                    <img
+                    <Image
                       src={previewUrl}
                       alt="Cover preview"
+                      width={48}
+                      height={48}
                       className="object-cover w-full h-full"
+                      unoptimized
                     />
                   </div>
                 ) : (
@@ -241,9 +245,9 @@ const CreateCollectionButton = () => {
           </div>
         </div>
         <DialogFooter>
-          <Button 
-            type="submit" 
-            onClick={handleSubmit} 
+          <Button
+            type="submit"
+            onClick={handleSubmit}
             disabled={isLoading}
             className="disabled:opacity-50"
           >

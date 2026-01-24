@@ -6,10 +6,10 @@ export const ScrollingTokenWarningBanner = () => {
     <div className="relative overflow-hidden whitespace-nowrap bg-black text-red-400 py-3 font-semibold mb-20">
       <div className="inline-block whitespace-nowrap animate-[scroll_15s_linear_infinite]">
         <span className="mr-12">
-          We don't have any tokens anywhere, if you find then it's scam, this project was just for a hackathon
+          We don&apos;t have any tokens anywhere, if you find then it&apos;s scam, this project was just for a hackathon
         </span>
         <span className="mr-12">
-          We don't have any tokens anywhere, if you find then it's scam, this project was just for a hackathon
+          We don&apos;t have any tokens anywhere, if you find then it&apos;s scam, this project was just for a hackathon
         </span>
       </div>
 

@@ -1,8 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import { Star, Quote } from "lucide-react";
+import { Star } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { GithubLogo, XLogo, ChatCircleDots } from "@phosphor-icons/react";
@@ -43,16 +42,6 @@ const testimonials = [
 
 export default function Testimonials() {
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  const nextTestimonial = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
-  };
-
-  const prevTestimonial = () => {
-    setCurrentIndex(
-      (prevIndex) => (prevIndex - 1 + testimonials.length) % testimonials.length
-    );
-  };
 
   return (
     <section className="w-full min-h-[20rem] h-fit py-20 flex flex-col items-center">

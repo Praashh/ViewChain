@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const config: NextConfig = {
   reactStrictMode: true,
+  transpilePackages: ["@repo/underdog", "@api/underdog"],
   env: {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
     SERVER_URL: process.env.SERVER_URL || "http://localhost:3001",

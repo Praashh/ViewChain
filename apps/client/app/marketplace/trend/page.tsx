@@ -1,6 +1,6 @@
 "use client";
 import { getTrendAssets } from "@/actions/getTrendAssets";
-import { Eye, Loader2, Share2, TrendingUpIcon } from "lucide-react";
+import { Eye } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -14,7 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { EyeClosed, Share, TrendUp } from "@phosphor-icons/react";
+import { Share } from "@phosphor-icons/react";
 import { Badge } from "@/components/ui/badge";
 import { CardSkeleton } from "@/components/ui/card-skeleton";
 interface TrendAsset {
@@ -35,7 +35,7 @@ interface TrendAsset {
     underdogProjectId: number;
   };
 }
-const page = () => {
+const TrendPage = () => {
   const [trendAssets, setTrendAssets] = useState<TrendAsset[] | undefined>([]);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
@@ -139,4 +139,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default TrendPage;
