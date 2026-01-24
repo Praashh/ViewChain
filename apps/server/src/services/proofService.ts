@@ -2,7 +2,7 @@ import { ReclaimClient } from "@reclaimprotocol/zk-fetch";
 import { Proof, transformForOnchain, verifyProof } from "@reclaimprotocol/js-sdk";
 import fetch from "node-fetch";
 import { recordProofAttempt } from "../models/ProofStats";
-import { prisma } from "@repo/db";
+import { prisma } from "@repo/db/client";
 
 /**
  * Type definition for the proof response
@@ -31,15 +31,15 @@ export async function verifyDirectly(url: string, expectedCount: number): Promis
   try {
     console.log(`Direct verification from: ${url}, expecting count: ${expectedCount}`);
     const response = await fetch(url);
-    
+
     if (!response.ok) {
       console.error(`Direct verification failed: API returned ${response.status} ${response.statusText}`);
       return false;
     }
-    
+
     const data = await response.json() as { views: number };
     console.log(`Expected view count: ${expectedCount}, Actual: ${data.views}`);
-    
+
     // Views can increase while verifying, so we check if actual is >= expected
     return data.views >= expectedCount;
   } catch (error) {
@@ -130,7 +130,7 @@ export async function generateViewProof(assetId: string, viewCount: number): Pro
     // Transform the proof for on-chain use
     const proofData = await transformForOnchain(proof);
     console.log(`ZK proof successfully generated and verified for asset ${assetId}`);
-    
+
     // Record successful proof attempt
     recordProofAttempt(assetId, true);
 
@@ -148,14 +148,14 @@ export async function generateViewProof(assetId: string, viewCount: number): Pro
   } catch (zkError) {
     console.error(`Error generating ZK proof for asset ${assetId}:`, zkError);
     recordProofAttempt(assetId, false);
-    
+
     // Fall back to direct verification
     console.log(`Falling back to direct verification for asset ${assetId}`);
-    
+
     try {
       // First try the original URL
       const isValid = await verifyDirectly(viewCountApiUrl, Number(viewCount));
-      
+
       if (isValid) {
         console.log(`Direct verification successful for asset ${assetId}`);
         return {
@@ -165,25 +165,25 @@ export async function generateViewProof(assetId: string, viewCount: number): Pro
           simpleVerification: true,
           message: "Verified directly (no ZK proof in development)"
         };
-      } 
-      
+      }
+
       // If that fails, try with localhost
       const localUrl = viewCountApiUrl.replace(/http:\/\/[^\/]+/, "http://localhost:3000");
       console.log(`Trying localhost fallback: ${localUrl}`);
-      
+
       const isLocalValid = await verifyDirectly(localUrl, Number(viewCount));
-      
+
       if (isLocalValid) {
         console.log(`Local verification successful for asset ${assetId}`);
         return {
           success: true,
-          assetId, 
+          assetId,
           viewCount,
           simpleVerification: true,
           message: "Verified directly through localhost (no ZK proof in development)"
         };
       }
-      
+
       // If all verification methods fail
       throw new Error(`View count verification failed on both network and localhost. Expected: ${viewCount}`);
     } catch (directError) {
@@ -205,12 +205,12 @@ export async function saveProofToDatabase(assetId: string, viewCount: number, pr
         viewCount
       }
     });
-    
+
     if (existingProof) {
       console.log(`Proof for asset ${assetId} with view count ${viewCount} already exists (ID: ${existingProof.id})`);
       return existingProof;
     }
-    
+
     // Create a new proof record
     const result = await prisma.viewProof.create({
       data: {
@@ -220,7 +220,7 @@ export async function saveProofToDatabase(assetId: string, viewCount: number, pr
         timestamp: new Date()
       }
     });
-    
+
     console.log(`Proof saved to database with ID: ${result.id}`);
     return result;
   } catch (error) {
