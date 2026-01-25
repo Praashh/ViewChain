@@ -1,5 +1,9 @@
 import { ReclaimClient } from "@reclaimprotocol/zk-fetch";
-import { Proof, transformForOnchain, verifyProof } from "@reclaimprotocol/js-sdk";
+import {
+  Proof,
+  transformForOnchain,
+  verifyProof,
+} from "@reclaimprotocol/js-sdk";
 import fetch from "node-fetch";
 import { recordProofAttempt } from "../models/ProofStats";
 import { prisma } from "@repo/db";
@@ -20,24 +24,31 @@ export interface ProofResult {
 // Initialize Reclaim client
 const reclaimClient = new ReclaimClient(
   process.env.APP_ID!,
-  process.env.APP_SECRET!
+  process.env.APP_SECRET!,
 );
 
 /**
  * Attempts direct verification of asset view count
  * This is a fallback when ZK proof generation fails
  */
-export async function verifyDirectly(url: string, expectedCount: number): Promise<boolean> {
+export async function verifyDirectly(
+  url: string,
+  expectedCount: number,
+): Promise<boolean> {
   try {
-    console.log(`Direct verification from: ${url}, expecting count: ${expectedCount}`);
+    console.log(
+      `Direct verification from: ${url}, expecting count: ${expectedCount}`,
+    );
     const response = await fetch(url);
 
     if (!response.ok) {
-      console.error(`Direct verification failed: API returned ${response.status} ${response.statusText}`);
+      console.error(
+        `Direct verification failed: API returned ${response.status} ${response.statusText}`,
+      );
       return false;
     }
 
-    const data = await response.json() as { views: number };
+    const data = (await response.json()) as { views: number };
     console.log(`Expected view count: ${expectedCount}, Actual: ${data.views}`);
 
     // Views can increase while verifying, so we check if actual is >= expected
@@ -51,7 +62,10 @@ export async function verifyDirectly(url: string, expectedCount: number): Promis
 /**
  * Generates ZK proof for asset view count
  */
-export async function generateViewProof(assetId: string, viewCount: number): Promise<ProofResult> {
+export async function generateViewProof(
+  assetId: string,
+  viewCount: number,
+): Promise<ProofResult> {
   if (!assetId || viewCount === undefined) {
     throw new Error("Missing required parameters: assetId and viewCount");
   }
@@ -61,18 +75,20 @@ export async function generateViewProof(assetId: string, viewCount: number): Pro
     const existingProof = await prisma.viewProof.findFirst({
       where: {
         assetId,
-        viewCount
-      }
+        viewCount,
+      },
     });
 
     if (existingProof) {
-      console.log(`Proof already exists for asset ${assetId} with view count ${viewCount}`);
+      console.log(
+        `Proof already exists for asset ${assetId} with view count ${viewCount}`,
+      );
       return {
         success: true,
         assetId,
         viewCount,
         proof: existingProof.proof,
-        message: "Proof already exists for this view count"
+        message: "Proof already exists for this view count",
       };
     }
   } catch (error) {
@@ -87,7 +103,9 @@ export async function generateViewProof(assetId: string, viewCount: number): Pro
   }
 
   const viewCountApiUrl = `${client_app_url}/api/assets/${assetId}/view`;
-  console.log(`Attempting ZK proof for asset ${assetId} with view count ${viewCount}`);
+  console.log(
+    `Attempting ZK proof for asset ${assetId} with view count ${viewCount}`,
+  );
   console.log(`API URL: ${viewCountApiUrl}`);
 
   try {
@@ -97,8 +115,8 @@ export async function generateViewProof(assetId: string, viewCount: number): Pro
       {
         method: "GET",
         headers: {
-          "Accept": "application/json"
-        }
+          Accept: "application/json",
+        },
       },
       {
         responseMatches: [
@@ -112,7 +130,7 @@ export async function generateViewProof(assetId: string, viewCount: number): Pro
             regex: '"views":(<view>\\d+)',
           },
         ],
-      }
+      },
     );
 
     if (!proof) {
@@ -129,7 +147,9 @@ export async function generateViewProof(assetId: string, viewCount: number): Pro
 
     // Transform the proof for on-chain use
     const proofData = await transformForOnchain(proof);
-    console.log(`ZK proof successfully generated and verified for asset ${assetId}`);
+    console.log(
+      `ZK proof successfully generated and verified for asset ${assetId}`,
+    );
 
     // Record successful proof attempt
     recordProofAttempt(assetId, true);
@@ -143,7 +163,7 @@ export async function generateViewProof(assetId: string, viewCount: number): Pro
       viewCount,
       transformedProof: proofData,
       proof,
-      message: "ZK proof successfully generated"
+      message: "ZK proof successfully generated",
     };
   } catch (zkError) {
     console.error(`Error generating ZK proof for asset ${assetId}:`, zkError);
@@ -163,12 +183,15 @@ export async function generateViewProof(assetId: string, viewCount: number): Pro
           assetId,
           viewCount,
           simpleVerification: true,
-          message: "Verified directly (no ZK proof in development)"
+          message: "Verified directly (no ZK proof in development)",
         };
       }
 
       // If that fails, try with localhost
-      const localUrl = viewCountApiUrl.replace(/http:\/\/[^\/]+/, "http://localhost:3000");
+      const localUrl = viewCountApiUrl.replace(
+        /http:\/\/[^\/]+/,
+        "http://localhost:3000",
+      );
       console.log(`Trying localhost fallback: ${localUrl}`);
 
       const isLocalValid = await verifyDirectly(localUrl, Number(viewCount));
@@ -180,15 +203,23 @@ export async function generateViewProof(assetId: string, viewCount: number): Pro
           assetId,
           viewCount,
           simpleVerification: true,
-          message: "Verified directly through localhost (no ZK proof in development)"
+          message:
+            "Verified directly through localhost (no ZK proof in development)",
         };
       }
 
       // If all verification methods fail
-      throw new Error(`View count verification failed on both network and localhost. Expected: ${viewCount}`);
+      throw new Error(
+        `View count verification failed on both network and localhost. Expected: ${viewCount}`,
+      );
     } catch (directError) {
-      console.error(`All verification methods failed for asset ${assetId}:`, directError);
-      throw new Error(`Failed to verify view count: ${directError instanceof Error ? directError.message : 'Unknown error'}`);
+      console.error(
+        `All verification methods failed for asset ${assetId}:`,
+        directError,
+      );
+      throw new Error(
+        `Failed to verify view count: ${directError instanceof Error ? directError.message : "Unknown error"}`,
+      );
     }
   }
 }
@@ -196,18 +227,24 @@ export async function generateViewProof(assetId: string, viewCount: number): Pro
 /**
  * Saves a generated proof to the database
  */
-export async function saveProofToDatabase(assetId: string, viewCount: number, proof: any) {
+export async function saveProofToDatabase(
+  assetId: string,
+  viewCount: number,
+  proof: any,
+) {
   try {
     // Check if we already have a proof for this exact view count
     const existingProof = await prisma.viewProof.findFirst({
       where: {
         assetId,
-        viewCount
-      }
+        viewCount,
+      },
     });
 
     if (existingProof) {
-      console.log(`Proof for asset ${assetId} with view count ${viewCount} already exists (ID: ${existingProof.id})`);
+      console.log(
+        `Proof for asset ${assetId} with view count ${viewCount} already exists (ID: ${existingProof.id})`,
+      );
       return existingProof;
     }
 
@@ -217,14 +254,17 @@ export async function saveProofToDatabase(assetId: string, viewCount: number, pr
         assetId,
         viewCount,
         proof,
-        timestamp: new Date()
-      }
+        timestamp: new Date(),
+      },
     });
 
     console.log(`Proof saved to database with ID: ${result.id}`);
     return result;
   } catch (error) {
-    console.error(`Error saving proof to database for asset ${assetId}:`, error);
+    console.error(
+      `Error saving proof to database for asset ${assetId}:`,
+      error,
+    );
     throw error;
   }
-} 
+}

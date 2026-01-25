@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import Providers from "./_provider";
 import { Toaster } from "@/components/ui/sonner";
 import localFont from "next/font/local";
-import { ScrollingTokenWarningBanner } from "@/components/token-warning";
+// import { ScrollingTokenWarningBanner } from "@/components/token-warning";
 
 const aeonik = localFont({
   src: [
@@ -63,7 +63,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <Providers>
-          <ScrollingTokenWarningBanner/>
+          {/* <ScrollingTokenWarningBanner/> */}
           {children}
         </Providers>
         <Toaster />
