@@ -166,3 +166,6 @@ pnpm db:deploy    # Deploy migrations to production
 
 https://x.com/100xDevs/status/1934240746334470277
 
+## NOTE: 
+Viewchain doesn't have any kind of token, it was built for hackathon and now it's just a project for portfolio. so if you see any token then it's scam
+
