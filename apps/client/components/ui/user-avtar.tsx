@@ -7,7 +7,7 @@ const avatarUrls = [
     hkirat: true,
   },
   {
-    img: "https://avatars.githubusercontent.com/u/129197623",
+    img: "https://avatars.githubusercontent.com/u/125460543?v=4",
   },
   {
     img: "https://avatars.githubusercontent.com/u/99237795",

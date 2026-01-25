@@ -37,7 +37,7 @@ export async function getWalletPrivateKey(AssetId?: string) {
         if (walletJSON.ok) {
           const jsonContent = await walletJSON.json();
           const fileContent = await fs.promises.readFile(filePath, "utf-8");
-          
+
           if (fileContent.length <= 0) {
             await fs.promises.writeFile(
               filePath,
@@ -50,7 +50,10 @@ export async function getWalletPrivateKey(AssetId?: string) {
         }
       }
     } catch (cloudinaryError) {
-      console.warn("Cloudinary fetch failed, using local wallet.json:", cloudinaryError);
+      console.warn(
+        "Cloudinary fetch failed, using local wallet.json:",
+        cloudinaryError,
+      );
     }
 
     // Fallback: check if local file exists and has content
