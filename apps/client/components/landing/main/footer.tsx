@@ -20,7 +20,7 @@ export const Footer = () => {
         <span className="text-xl font-medium">ViewChain</span>
       </Link>
 
-      <div className="text-sm text-neutral-300">
+      {/* <div className="text-sm text-neutral-300">
         Developed by{" "}
         <Dialog>
           <DialogTrigger>
@@ -82,7 +82,7 @@ export const Footer = () => {
             </div>
           </DialogContent>
         </Dialog>
-      </div>
+      </div> */}
 
       <div className="flex items-center justify-center gap-4">
         <Link href="https://x.com/_viewchain_">
